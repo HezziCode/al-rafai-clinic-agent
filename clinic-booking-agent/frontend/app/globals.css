@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-dark: #0A1628;
+  --bg-card: #111D35;
+  --accent-teal: #00BFA6;
+  --accent-cyan: #4DD0E1;
+  --text-main: #F1F5F9;
+  --text-muted: #94A3B8;
+  --border-glass: rgba(255, 255, 255, 0.08);
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Glassmorphism panel styles */
+.glass-panel {
+  background: rgba(17, 29, 53, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(0, 191, 166, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -10px rgba(0, 191, 166, 0.15);
+}
+
+/* Ambient glows */
+.glow-teal {
+  box-shadow: 0 0 25px rgba(0, 191, 166, 0.35);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #FFFFFF 0%, #4DD0E1 50%, #00BFA6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-btn {
+  background: linear-gradient(135deg, #00BFA6 0%, #06B6D4 100%);
+  color: #0A1628;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.gradient-btn:hover {
+  opacity: 0.92;
+  box-shadow: 0 0 20px rgba(0, 191, 166, 0.4);
+  transform: scale(1.02);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0A1628;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E2C4F;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00BFA6;
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s infinite ease-in-out;
+}
+
+@keyframes bounceSlow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-bounce-slow {
+  animation: bounceSlow 2.5s infinite ease-in-out;
+}
