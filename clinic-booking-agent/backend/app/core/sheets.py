@@ -33,9 +33,13 @@ class GoogleSheetsService:
     def _initialize(self):
         try:
             creds = None
-            if settings.GOOGLE_SERVICE_ACCOUNT_JSON:
+            json_str = settings.GOOGLE_SERVICE_ACCOUNT_JSON or ""
+            if not json_str and settings.GOOGLE_SERVICE_ACCOUNT_PATH and settings.GOOGLE_SERVICE_ACCOUNT_PATH.strip().startswith("{"):
+                json_str = settings.GOOGLE_SERVICE_ACCOUNT_PATH
+
+            if json_str:
                 try:
-                    info = json.loads(settings.GOOGLE_SERVICE_ACCOUNT_JSON)
+                    info = json.loads(json_str)
                     creds = Credentials.from_service_account_info(info, scopes=SCOPES)
                 except Exception as je:
                     logger.error(f"Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON: {je}")
