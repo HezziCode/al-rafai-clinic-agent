@@ -150,11 +150,14 @@ class GoogleSheetsService:
         existing_appointments = self.get_all_appointments()
         booked_times = set()
 
+        target_mm_dd = date_str[-5:] if len(date_str) >= 5 else date_str
+
         for apt in existing_appointments:
             apt_date = str(apt.get("Appointment_Date", "")).strip()
             status = str(apt.get("Status", "")).strip().upper()
 
-            if apt_date == date_str and status in ["BOOKED", "PENDING", "CONFIRMED", "RESCHEDULED"]:
+            is_date_match = (apt_date == date_str) or (len(apt_date) >= 5 and apt_date[-5:] == target_mm_dd)
+            if is_date_match and status in ["BOOKED", "PENDING", "CONFIRMED", "RESCHEDULED"]:
                 start_t = str(apt.get("Start_Time", "")).strip()
                 if start_t:
                     booked_times.add(start_t)
