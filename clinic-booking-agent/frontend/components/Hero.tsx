@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Calendar, Bot, ShieldCheck, Sparkles, MessageCircle, Mic, Star, CheckCircle, Clock } from 'lucide-react';
+import { Calendar, Bot, CheckCircle2, MessageCircle, FileSpreadsheet, Mic, Star, Clock } from 'lucide-react';
 
 interface HeroProps {
   onOpenChat: () => void;
@@ -10,134 +10,113 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onOpenChat, onScrollToSlots }) => {
   return (
-    <section id="about" className="relative pt-12 pb-20 px-4 lg:px-8 max-w-7xl mx-auto overflow-hidden bg-gradient-to-b from-[#F0F6FF]/60 via-white to-white">
-      
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <section className="pt-28 pb-16 px-4 lg:px-8 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
         
-        {/* Left Column: Text & CTAs */}
-        <div className="lg:col-span-7 space-y-6">
+        {/* Left Side: Warm #F6F0E8 Panel (55% width) */}
+        <div className="lg:col-span-7 bg-warm rounded-3xl p-6 sm:p-10 lg:p-12 border border-border flex flex-col justify-between shadow-sm">
           
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAF3FB] border border-[#BDD7F5] text-[#2C6FAC] text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5 text-[#4A90D9]" />
-            AI-Powered Smart Booking • WhatsApp Confirmed
+          <div className="space-y-6">
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-border text-xs sm:text-sm font-semibold text-text-mid shadow-xs">
+              <span className="text-primary font-bold">✦</span> Trusted by 350+ Patients in the Community
+            </div>
+
+            {/* Main H1 Headline */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-text-dark tracking-tight leading-[1.1]">
+              Your Health, <br />
+              <span className="text-primary">Our Priority.</span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-base sm:text-lg text-text-mid max-w-lg leading-relaxed font-normal">
+              Expert 1-on-1 consultations at <strong className="text-text-dark font-semibold">AL-RAFAI CLINIC</strong> with Dr. Fatima. Daily from <strong className="text-primary font-semibold">12 PM – 6 PM</strong>. Book in 60 seconds via AI chat or voice — in Roman Urdu or English.
+            </p>
+
+            {/* CTAs Stacked Row */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
+              <button
+                onClick={onOpenChat}
+                className="bg-primary hover:bg-primary-dark text-white rounded-full px-8 py-4 font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg transition-all hover:scale-[1.02]"
+              >
+                <span>🤖</span>
+                <span>Book via AI Chat / Voice</span>
+              </button>
+
+              <button
+                onClick={onScrollToSlots}
+                className="border-2 border-primary text-primary hover:bg-primary-light rounded-full px-8 py-4 font-bold text-sm sm:text-base flex items-center justify-center gap-2 bg-white transition-all hover:scale-[1.02] shadow-xs"
+              >
+                <span>📅</span>
+                <span>Check Today's Slots</span>
+              </button>
+            </div>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] text-[#1A1A2E]">
-            <span className="italic font-bold text-[#1A1A2E]">Your Health, Our Priority.</span> <br />
-            <span className="text-[#4A90D9]">Compassionate Care by Dr. Fatima</span>
-          </h1>
-
-          <p className="text-base sm:text-lg text-[#5A6A7A] max-w-2xl leading-relaxed">
-            Welcome to <strong className="text-[#1A1A2E] font-semibold">AL-RAFAI CLINIC</strong>. Experience dedicated, unhurried 1-on-1 consultations with Dr. Fatima. Available daily from <strong className="text-[#4A90D9] font-semibold">12:00 PM to 6:00 PM</strong>. Roman Urdu & English voice / chat supported.
-          </p>
-
-          {/* Action CTAs */}
-          <div className="flex flex-wrap items-center gap-4 pt-2">
-            <button
-              onClick={onOpenChat}
-              className="bg-[#4A90D9] hover:bg-[#2C6FAC] text-white px-7 py-3.5 rounded-full text-sm font-semibold flex items-center gap-2.5 shadow-md shadow-[#4A90D9]/25 transition-all hover:scale-[1.02]"
-            >
-              <Bot className="w-5 h-5" />
-              Book via AI Assistant (Text / Voice)
-            </button>
-
-            <button
-              onClick={onScrollToSlots}
-              className="border border-[#4A90D9] text-[#4A90D9] hover:bg-[#EAF3FB] hover:text-[#2C6FAC] px-6 py-3.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2 bg-white shadow-sm"
-            >
-              <Calendar className="w-4 h-4 text-[#4A90D9]" />
-              Check Available Slots
-            </button>
-          </div>
-
-          {/* Feature Badges */}
-          <div className="grid grid-cols-3 gap-4 pt-6 border-t border-[#E0EAF4]">
-            <div>
-              <p className="text-xs text-[#5A6A7A]">Doctor Availability</p>
-              <p className="text-sm font-bold text-[#1A1A2E] mt-0.5">12 PM – 6 PM Daily</p>
-            </div>
-            <div>
-              <p className="text-xs text-[#5A6A7A]">Booking Confirmation</p>
-              <p className="text-sm font-bold text-[#27AE60] mt-0.5 flex items-center gap-1">
-                <MessageCircle className="w-3.5 h-3.5" /> Instant WhatsApp
-              </p>
-            </div>
-            <div>
-              <p className="text-xs text-[#5A6A7A]">Record System</p>
-              <p className="text-sm font-bold text-[#4A90D9] mt-0.5">Google Sheets Live</p>
-            </div>
+          {/* 3 Inline Trust Micro-Badges */}
+          <div className="pt-8 mt-8 border-t border-border/80 flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm font-semibold text-text-mid">
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-accent" /> WhatsApp Confirmed
+            </span>
+            <span className="text-border hidden sm:inline">•</span>
+            <span className="flex items-center gap-1.5">
+              <FileSpreadsheet className="w-4 h-4 text-primary" /> Google Sheets Live
+            </span>
+            <span className="text-border hidden sm:inline">•</span>
+            <span className="flex items-center gap-1.5">
+              <Mic className="w-4 h-4 text-primary-mid" /> Voice & Chat Supported
+            </span>
           </div>
 
         </div>
 
-        {/* Right Column: Doctor Card & AI Demo (HecDoc Style) */}
-        <div className="lg:col-span-5 relative">
+        {/* Right Side: Doctor Card with Floating Badges (45% width) */}
+        <div className="lg:col-span-5 relative flex items-center justify-center">
           
-          {/* Main Doctor Profile Card */}
-          <div className="bg-white p-6 sm:p-7 rounded-2xl border border-[#E0EAF4] shadow-lg shadow-[#4A90D9]/10 relative z-10 space-y-5">
+          <div className="w-full h-[460px] sm:h-[540px] rounded-3xl overflow-hidden shadow-xl border border-border relative bg-white group">
             
-            <div className="flex items-center gap-4 pb-5 border-b border-[#E0EAF4]">
-              <div className="w-16 h-16 rounded-2xl bg-[#EAF3FB] border border-[#BDD7F5] flex items-center justify-center text-[#4A90D9] font-bold text-xl shadow-sm">
-                DF
+            {/* Professional Doctor Photo */}
+            <img 
+              src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800&auto=format&fit=crop&q=80" 
+              alt="Dr. Fatima - AL-RAFAI CLINIC" 
+              className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+              loading="eager"
+            />
+
+            {/* Gradient Overlay for bottom text legibility */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+
+            {/* Top Right: Available Today Pill */}
+            <div className="absolute top-4 right-4 z-10 bg-accent text-white text-xs font-bold rounded-full px-3.5 py-1.5 shadow-md flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-white animate-soft-pulse" />
+              Available Today
+            </div>
+
+            {/* Floating Top-Left Card: Next Slot */}
+            <div className="absolute top-4 left-4 z-10 bg-white/95 backdrop-blur-xs rounded-xl shadow-lg p-2.5 sm:p-3 border border-border flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-accent animate-ping" />
+              <p className="text-xs font-bold text-text-dark flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5 text-primary" /> Next Slot: 2:00 PM Today
+              </p>
+            </div>
+
+            {/* Bottom Overlay Label */}
+            <div className="absolute bottom-4 right-4 z-10 text-right text-white">
+              <p className="text-sm font-extrabold leading-tight drop-shadow-sm">Dr. Fatima, MBBS</p>
+              <p className="text-[11px] text-white/90 font-medium drop-shadow-sm">General Physician & Consultant</p>
+            </div>
+
+            {/* Floating Bottom-Left Card: Rating & Verified Patients */}
+            <div className="absolute -bottom-3 sm:bottom-4 left-4 z-20 bg-white rounded-2xl shadow-xl p-3.5 sm:p-4 border border-border flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-500 shrink-0">
+                <Star className="w-5 h-5 fill-amber-400" />
               </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-[#1A1A2E]">Dr. Fatima, MBBS</h3>
-                  <span className="text-[11px] font-semibold text-[#27AE60] bg-[#E8F8F0] px-2.5 py-0.5 rounded-full border border-[#B7ECC9]">
-                    Available Today
-                  </span>
-                </div>
-                <p className="text-xs text-[#4A90D9] font-medium mt-0.5">Senior General Physician & Consultant</p>
-                <p className="text-xs text-[#5A6A7A] mt-1 flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-[#4A90D9]" /> 12:00 PM – 6:00 PM Daily
-                </p>
+              <div>
+                <p className="text-xs sm:text-sm font-extrabold text-text-dark">⭐⭐⭐⭐⭐ 4.9/5</p>
+                <p className="text-[11px] text-text-light font-medium">350+ Verified Patients</p>
               </div>
             </div>
 
-            {/* AI Assistant Chat Preview */}
-            <div className="space-y-3 bg-[#F0F6FF]/80 p-4 rounded-xl border border-[#E0EAF4]">
-              <div className="flex items-center justify-between text-xs pb-2 border-b border-[#E0EAF4]">
-                <span className="flex items-center gap-1.5 text-[#4A90D9] font-semibold">
-                  <Bot className="w-3.5 h-3.5" /> AL-RAFAI AI Assistant
-                </span>
-                <span className="flex items-center gap-1 text-[#5A6A7A] text-[11px] bg-white px-2 py-0.5 rounded-full border border-[#E0EAF4]">
-                  <Mic className="w-3 h-3 text-[#4A90D9]" /> Voice & Text
-                </span>
-              </div>
-
-              <div className="space-y-2 text-xs">
-                <div className="bg-white p-2.5 rounded-xl text-[#1A1A2E] border border-[#E0EAF4] shadow-xs">
-                  👋 Assalam-o-Alaikum! Main Dr. Fatima ke clinic ki AI assistant hoon. Main aapki appointment book kar sakti hoon.
-                </div>
-                <div className="bg-[#4A90D9] p-2.5 rounded-xl text-white font-medium ml-6 shadow-xs">
-                  Mujhe kal 2:00 PM pe Dr. Fatima ke sath appointment chahiye.
-                </div>
-                <div className="bg-white p-2.5 rounded-xl text-[#1A1A2E] border border-[#E0EAF4] flex items-center justify-between shadow-xs">
-                  <span>✅ 2:00 PM slot open hai! Aapka naam aur phone number kya hai?</span>
-                  <CheckCircle className="w-4 h-4 text-[#27AE60] shrink-0 ml-2" />
-                </div>
-              </div>
-            </div>
-
-            {/* Clickable CTA inside Card */}
-            <button
-              onClick={onOpenChat}
-              className="w-full py-3 rounded-full bg-[#EAF3FB] hover:bg-[#D8EAF8] border border-[#BDD7F5] text-[#2C6FAC] font-semibold text-xs sm:text-sm text-center transition-all shadow-xs"
-            >
-              Start Interactive Booking Chat →
-            </button>
-
-          </div>
-
-          {/* Floating Review / Rating Card (HecDoc Style) */}
-          <div className="absolute -bottom-4 -left-4 sm:-left-6 z-20 bg-white p-3.5 rounded-xl border border-[#E0EAF4] shadow-lg shadow-[#4A90D9]/15 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#FFF9E6] border border-[#FFE7A3] flex items-center justify-center text-amber-500">
-              <Star className="w-5 h-5 fill-amber-400" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-[#1A1A2E]">⭐ 4.9 • 350+ Patients</p>
-              <p className="text-[10px] text-[#5A6A7A]">Verified 1-on-1 Consultations</p>
-            </div>
           </div>
 
         </div>

@@ -52,94 +52,98 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex justify-end">
-      <div className="w-full max-w-xl bg-white border-l border-[#E0EAF4] h-full p-6 flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-right duration-300">
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end">
+      <div className="w-full max-w-xl bg-white border-l border-border h-full flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-right duration-300">
         
-        {/* Header */}
-        <div className="flex items-center justify-between pb-6 border-b border-[#E0EAF4]">
+        {/* Header - Deep Primary Blue */}
+        <div className="bg-primary p-6 text-white flex items-center justify-between shadow-md">
           <div>
-            <span className="text-xs text-[#4A90D9] font-bold uppercase tracking-wider bg-[#EAF3FB] px-2.5 py-0.5 rounded-full border border-[#BDD7F5]">
+            <span className="text-[11px] text-blue-200 font-bold uppercase tracking-wider bg-white/15 px-3 py-1 rounded-full">
               Doctor Dashboard
             </span>
-            <h2 className="text-xl font-bold text-[#1A1A2E] flex items-center gap-2 mt-2">
-              <FileText className="w-5 h-5 text-[#4A90D9]" /> Google Sheets Ledger
+            <h2 className="text-xl font-extrabold text-white flex items-center gap-2 mt-2">
+              <FileText className="w-5 h-5 text-blue-200" /> Google Sheets Ledger
             </h2>
-            <p className="text-xs text-[#5A6A7A] mt-0.5">AL-RAFAI CLINIC • Dr. Fatima (12 PM – 6 PM Daily)</p>
+            <p className="text-xs text-blue-100 mt-0.5 font-medium">
+              AL-RAFAI CLINIC • Dr. Fatima (12 PM – 6 PM Daily)
+            </p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={fetchAppointments}
-              className="p-2 rounded-xl bg-[#F0F6FF] hover:bg-[#EAF3FB] border border-[#E0EAF4] text-[#5A6A7A] hover:text-[#4A90D9] transition-colors"
-              title="Refresh Google Sheet Ledger"
+              className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
+              title="Refresh Google Sheets Ledger"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#4A90D9]' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-xl bg-[#F0F6FF] hover:bg-[#EAF3FB] border border-[#E0EAF4] text-[#5A6A7A] hover:text-[#1A1A2E] transition-colors"
+              className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Content List */}
-        <div className="flex-1 overflow-y-auto py-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-[#F8FAFC]">
           {loading && appointments.length === 0 ? (
-            <div className="text-center py-12 text-[#5A6A7A] text-xs">
-              Loading appointment records from Google Sheets...
+            <div className="text-center py-16 text-text-light text-sm font-medium">
+              Loading real-time appointment records from Google Sheets...
             </div>
           ) : appointments.length > 0 ? (
             appointments.map((apt, idx) => (
-              <div key={idx} className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E0EAF4] space-y-3 shadow-xs">
+              <div key={idx} className="bg-white p-5 rounded-2xl border border-border space-y-3.5 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold text-[#2C6FAC] px-2.5 py-1 rounded-lg bg-[#EAF3FB] border border-[#BDD7F5]">
+                  <span className="text-xs font-mono font-bold text-primary px-3 py-1 rounded-lg bg-primary-light border border-blue-200">
                     {apt.Booking_ID}
                   </span>
-                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#E8F8F0] text-[#27AE60] border border-[#B7ECC9]">
+                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-accent-light text-accent border border-green-200">
                     {apt.Status || 'BOOKED'}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="text-[#5A6A7A] flex items-center gap-1"><User className="w-3 h-3 text-[#4A90D9]" /> Patient:</span>
-                    <p className="font-bold text-[#1A1A2E] mt-0.5">{apt.Patient_Name}</p>
+                    <span className="text-text-light flex items-center gap-1 font-medium"><User className="w-3.5 h-3.5 text-primary" /> Patient:</span>
+                    <p className="font-bold text-text-dark text-sm mt-0.5">{apt.Patient_Name}</p>
                   </div>
                   <div>
-                    <span className="text-[#5A6A7A] flex items-center gap-1"><Phone className="w-3 h-3 text-[#4A90D9]" /> Phone:</span>
-                    <p className="font-bold text-[#1A1A2E] mt-0.5">{apt.Patient_Phone}</p>
+                    <span className="text-text-light flex items-center gap-1 font-medium"><Phone className="w-3.5 h-3.5 text-accent" /> Phone:</span>
+                    <p className="font-bold text-text-dark text-sm mt-0.5">{apt.Patient_Phone}</p>
                   </div>
                   <div>
-                    <span className="text-[#5A6A7A] flex items-center gap-1"><Calendar className="w-3 h-3 text-[#4A90D9]" /> Date:</span>
-                    <p className="font-bold text-[#1A1A2E] mt-0.5">{apt.Appointment_Date}</p>
+                    <span className="text-text-light flex items-center gap-1 font-medium"><Calendar className="w-3.5 h-3.5 text-primary-mid" /> Date:</span>
+                    <p className="font-bold text-text-dark text-sm mt-0.5">{apt.Appointment_Date}</p>
                   </div>
                   <div>
-                    <span className="text-[#5A6A7A] flex items-center gap-1"><Clock className="w-3 h-3 text-[#4A90D9]" /> Time:</span>
-                    <p className="font-bold text-[#1A1A2E] mt-0.5">{apt.Start_Time}</p>
+                    <span className="text-text-light flex items-center gap-1 font-medium"><Clock className="w-3.5 h-3.5 text-amber-500" /> Time:</span>
+                    <p className="font-bold text-text-dark text-sm mt-0.5">{apt.Start_Time}</p>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-[#E0EAF4] text-xs text-[#5A6A7A]">
-                  <span className="font-medium text-[#5A6A7A]">Reason for visit: </span>
-                  <span className="text-[#1A1A2E] font-medium">{apt.Visit_Reason}</span>
+                <div className="pt-2.5 border-t border-border text-xs text-text-mid">
+                  <span className="font-semibold text-text-light">Reason for visit: </span>
+                  <span className="text-text-dark font-medium">{apt.Visit_Reason}</span>
                 </div>
               </div>
             ))
           ) : (
-            <div className="text-center py-12 bg-[#F0F6FF] rounded-xl border border-[#E0EAF4] p-6">
-              <MessageSquare className="w-8 h-8 text-[#4A90D9] mx-auto mb-2" />
-              <p className="text-sm font-bold text-[#1A1A2E]">No Appointments Booked Yet</p>
-              <p className="text-xs text-[#5A6A7A] mt-1">Book an appointment via the AI Chatbot to see it automatically appear here and in your Google Sheet!</p>
+            <div className="text-center py-16 bg-white rounded-2xl border border-border p-8 shadow-xs">
+              <MessageSquare className="w-10 h-10 text-primary mx-auto mb-3" />
+              <p className="text-base font-bold text-text-dark">No Appointments Booked Yet</p>
+              <p className="text-xs text-text-mid mt-1">Book an appointment via the AI Chatbot to see it automatically appear here and in your Google Sheet!</p>
             </div>
           )}
         </div>
 
         {/* Footer info */}
-        <div className="pt-4 border-t border-[#E0EAF4] text-[11px] text-[#5A6A7A] flex items-center justify-between">
+        <div className="p-4 bg-white border-t border-border text-xs text-text-mid flex items-center justify-between font-medium">
           <span>AL-RAFAI CLINIC • Google Sheets Live</span>
-          <span className="text-[#27AE60] font-semibold">WhatsApp Enabled</span>
+          <span className="text-accent font-bold flex items-center gap-1">
+            <CheckCircle className="w-3.5 h-3.5" /> WhatsApp Alert Enabled
+          </span>
         </div>
 
       </div>
