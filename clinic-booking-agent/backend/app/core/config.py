@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     TWILIO_WHATSAPP_NUMBER: str = "whatsapp:+14155238886"
     DOCTOR_WHATSAPP_NUMBER: str = "whatsapp:+15551234567"
 
-    CLINIC_NAME: str = "CarePulse Wellness Clinic"
+    CLINIC_NAME: str = "AL-RAFAI CLINIC"
     CLINIC_DOCTOR_NAME: str = "Dr. Fatima"
     CLINIC_PHONE: str = "+1 (555) 234-5678"
     CLINIC_ADDRESS: str = "742 Evergreen Terrace, Suite 100"

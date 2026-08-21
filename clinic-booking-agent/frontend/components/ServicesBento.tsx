@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { HeartPulse, Activity, Stethoscope, Video, FileSpreadsheet, ShieldAlert } from 'lucide-react';
+import { HeartPulse, Activity, Stethoscope, Video, FileSpreadsheet } from 'lucide-react';
 
 interface ServicesBentoProps {
   onOpenChat: () => void;
@@ -12,54 +12,52 @@ export const ServicesBento: React.FC<ServicesBentoProps> = ({ onOpenChat }) => {
     {
       icon: Stethoscope,
       title: "General Consultations",
-      desc: "Comprehensive 1-on-1 health evaluation, symptom assessment, and individual treatment plans with Dr. Jenkins.",
+      desc: "Comprehensive 1-on-1 health evaluation, symptom assessment, and personalized treatment plans with Dr. Fatima.",
       span: "lg:col-span-2",
       badge: "Most Popular",
-      color: "from-teal-500/20 to-teal-500/5 text-teal-400"
     },
     {
       icon: HeartPulse,
       title: "Preventive Care",
-      desc: "Routine physicals, blood pressure checks, diabetes screening, and wellness guidance.",
+      desc: "Routine physicals, blood pressure checks, diabetes screening, and wellness counseling.",
       span: "lg:col-span-1",
       badge: "Wellness",
-      color: "from-cyan-500/20 to-cyan-500/5 text-cyan-400"
     },
     {
       icon: Activity,
       title: "Chronic Condition Care",
-      desc: "Dedicated ongoing management for hypertension, asthma, thyroid issues, and arthritis.",
+      desc: "Dedicated ongoing management for hypertension, asthma, thyroid issues, and diabetes.",
       span: "lg:col-span-1",
       badge: "Long-term Care",
-      color: "from-emerald-500/20 to-emerald-500/5 text-emerald-400"
     },
     {
       icon: Video,
       title: "Telehealth Consults",
-      desc: "Convenient video or audio consultations for follow-ups and quick medical advice.",
+      desc: "Convenient remote audio/video follow-ups for lab reviews and quick medical advice.",
       span: "lg:col-span-1",
       badge: "Virtual",
-      color: "from-blue-500/20 to-blue-500/5 text-blue-400"
     },
     {
       icon: FileSpreadsheet,
       title: "Lab Orders & Refills",
-      desc: "Fast blood work requisitions, lab interpretation, and prescription maintenance renewals.",
+      desc: "Fast blood work requisitions, lab report interpretation, and prescription renewals.",
       span: "lg:col-span-1",
       badge: "Fast Track",
-      color: "from-indigo-500/20 to-indigo-500/5 text-indigo-400"
     }
   ];
 
   return (
-    <section className="py-16 px-4 lg:px-8 max-w-7xl mx-auto">
+    <section id="services" className="py-16 px-4 lg:px-8 max-w-7xl mx-auto">
       
       <div className="text-center max-w-2xl mx-auto mb-12">
-        <h2 className="text-3xl font-bold text-white tracking-tight">
+        <span className="text-xs font-semibold text-[#4A90D9] uppercase tracking-wider bg-[#EAF3FB] px-3 py-1 rounded-full border border-[#BDD7F5]">
+          Clinical Offerings
+        </span>
+        <h2 className="text-3xl font-extrabold text-[#1A1A2E] tracking-tight mt-3">
           Comprehensive Medical Services
         </h2>
-        <p className="text-sm text-slate-400 mt-2">
-          Dr. Sarah Jenkins provides expert care across general health, preventive medicine, and ongoing conditions.
+        <p className="text-sm text-[#5A6A7A] mt-2">
+          Dr. Fatima provides expert medical care across primary health, preventive wellness, and chronic disease management.
         </p>
       </div>
 
@@ -69,28 +67,28 @@ export const ServicesBento: React.FC<ServicesBentoProps> = ({ onOpenChat }) => {
           return (
             <div 
               key={idx}
-              className={`glass-card p-6 rounded-2xl relative flex flex-col justify-between ${service.span}`}
+              className={`bg-white p-6 rounded-2xl border border-[#E0EAF4] shadow-sm hover:border-[#BDD7F5] hover:shadow-md hover:shadow-[#4A90D9]/10 transition-all flex flex-col justify-between ${service.span}`}
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${service.color} border border-white/10`}>
-                    <Icon className="w-6 h-6" />
+                  <div className="p-3 rounded-xl bg-[#EAF3FB] border border-[#BDD7F5] text-[#4A90D9]">
+                    <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300">
+                  <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#F0F6FF] border border-[#E0EAF4] text-[#5A6A7A]">
                     {service.badge}
                   </span>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
-                <p className="text-xs text-slate-300 leading-relaxed">{service.desc}</p>
+                <h3 className="text-lg font-bold text-[#1A1A2E] mb-2">{service.title}</h3>
+                <p className="text-xs sm:text-sm text-[#5A6A7A] leading-relaxed">{service.desc}</p>
               </div>
 
-              <div className="pt-6 mt-4 border-t border-white/5 flex items-center justify-between">
-                <span className="text-xs text-teal-400 font-medium">30 Min Appointment</span>
+              <div className="pt-6 mt-4 border-t border-[#E0EAF4] flex items-center justify-between">
+                <span className="text-xs text-[#4A90D9] font-semibold">30 Min Appointment</span>
                 <button 
                   onClick={onOpenChat}
-                  className="text-xs font-semibold text-white hover:text-teal-300 flex items-center gap-1 transition-colors"
+                  className="text-xs font-semibold text-[#4A90D9] hover:text-[#2C6FAC] flex items-center gap-1 transition-colors group"
                 >
-                  Book This Service →
+                  Book Service <span className="group-hover:translate-x-0.5 transition-transform">→</span>
                 </button>
               </div>
             </div>

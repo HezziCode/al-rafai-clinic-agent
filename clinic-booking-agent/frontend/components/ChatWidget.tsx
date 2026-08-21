@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, X, Send, Phone, MessageCircle, Sparkles, RefreshCw, Mic, MicOff, CheckCircle2, User, Clock } from 'lucide-react';
+import { Bot, X, Send, Phone, Mic, CheckCircle2, User, Clock, Sparkles } from 'lucide-react';
 import Vapi from '@vapi-ai/web';
 import { WS_URL, VAPI_PUBLIC_KEY, VAPI_ASSISTANT_ID } from '@/lib/config';
 
@@ -25,7 +25,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
     {
       id: 'msg-1',
       sender: 'bot',
-      text: "👋 Assalam-o-Alaikum! Main Dr. Fatima ke clinic ki AI Virtual Assistant hoon.\n\nAap clinic timings (12:00 PM - 6:00 PM Daily), services, address ke baare mein pooch sakte hain ya foran appointment book karwa sakte hain. Main aapki kya madad kar sakti hoon?",
+      text: "👋 Assalam-o-Alaikum! Main AL-RAFAI CLINIC (Dr. Fatima) ki AI Virtual Assistant hoon.\n\nAap clinic timings (12:00 PM - 6:00 PM Daily), services, address ke baare mein pooch sakte hain ya foran appointment book karwa sakte hain. Main aapki kya madad kar sakti hoon?",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       agent: 'TriageAgent'
     }
@@ -150,7 +150,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
 
     ws.onopen = () => {
       setIsConnecting(false);
-      console.log("Connected to CarePulse AI WebSocket Backend");
+      console.log("Connected to AL-RAFAI AI WebSocket Backend");
     };
 
     ws.onmessage = (event) => handleWSMessage(event);
@@ -304,14 +304,13 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
       <button
         onClick={onClose}
         title="Chat with AI Assistant"
-        className="fixed bottom-6 right-6 z-50 gradient-btn h-14 rounded-full shadow-2xl shadow-teal-500/40 flex items-center justify-start p-4 transition-all duration-300 ease-out hover:scale-105 group overflow-hidden max-w-[56px] hover:max-w-[240px]"
+        className="fixed bottom-6 right-6 z-50 bg-[#4A90D9] hover:bg-[#2C6FAC] text-white h-14 rounded-full shadow-lg shadow-[#4A90D9]/30 flex items-center justify-start p-4 transition-all duration-300 ease-out hover:scale-105 group overflow-hidden max-w-[56px] hover:max-w-[240px]"
       >
         <div className="relative flex-shrink-0">
-          <Bot className="w-6 h-6 text-navy-900" />
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 border-2 border-navy-900 rounded-full animate-ping" />
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 border-2 border-navy-900 rounded-full" />
+          <Bot className="w-6 h-6 text-white" />
+          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#27AE60] border-2 border-white rounded-full" />
         </div>
-        <span className="whitespace-nowrap text-sm font-bold text-navy-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out delay-75 pl-3 pr-1">
+        <span className="whitespace-nowrap text-xs font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out delay-75 pl-3 pr-1">
           Chat with AI Assistant
         </span>
       </button>
@@ -319,29 +318,29 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
   }
 
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[95vw] sm:w-[420px] h-[600px] max-h-[85vh] glass-panel rounded-3xl border border-white/15 shadow-2xl flex flex-col overflow-hidden animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-6 duration-300 ease-out origin-bottom-right">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[95vw] sm:w-[420px] h-[600px] max-h-[85vh] bg-white rounded-2xl border border-[#E0EAF4] shadow-2xl shadow-[#4A90D9]/15 flex flex-col overflow-hidden animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-6 duration-300 ease-out origin-bottom-right">
       
       {/* Header */}
-      <div className="p-4 bg-navy-900/80 border-b border-white/10 flex items-center justify-between">
+      <div className="p-4 bg-[#EAF3FB] border-b border-[#E0EAF4] flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl gradient-btn flex items-center justify-center text-navy-900 font-bold shadow-md shadow-teal-500/20">
+          <div className="w-10 h-10 rounded-xl bg-white border border-[#BDD7F5] flex items-center justify-center text-[#4A90D9] font-bold shadow-xs">
             <Bot className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-white">CarePulse AI</h3>
-              <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" /> Live
+              <h3 className="text-sm font-bold text-[#1A1A2E]">AL-RAFAI AI Assistant</h3>
+              <span className="flex items-center gap-1 text-[10px] text-[#5A6A7A] font-semibold px-2 py-0.5 rounded-full bg-white border border-[#E0EAF4]">
+                <span className="w-1.5 h-1.5 bg-[#27AE60] rounded-full" /> Online
               </span>
             </div>
-            <p className="text-[11px] text-slate-400">Dr. Fatima • 12:00 PM – 6:00 PM Daily</p>
+            <p className="text-[11px] text-[#5A6A7A]">Dr. Fatima • 12:00 PM – 6:00 PM Daily</p>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5">
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 hover:text-white transition-colors"
+            className="p-2 rounded-xl bg-white hover:bg-[#F0F6FF] border border-[#E0EAF4] text-[#5A6A7A] hover:text-[#1A1A2E] transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -350,35 +349,37 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
 
       {/* Voice Mode Status Banner */}
       {isVoiceActive && (
-        <div className="bg-teal-500/15 border-b border-teal-500/20 px-4 py-2 text-xs text-teal-300 flex items-center justify-between">
-          <span className="flex items-center gap-2">
-            <Mic className="w-3.5 h-3.5 text-teal-400 animate-pulse" />
+        <div className="bg-[#EAF3FB] border-b border-[#BDD7F5] px-4 py-2 text-xs text-[#2C6FAC] flex items-center justify-between">
+          <span className="flex items-center gap-2 font-medium">
+            <Mic className="w-3.5 h-3.5 text-[#4A90D9] animate-pulse" />
             Vapi Voice Assistant Active (Roman Urdu / English)
           </span>
-          <span className="text-[10px] text-teal-400 font-mono">Speak to Book</span>
+          <span className="text-[10px] text-[#4A90D9] font-semibold bg-white px-2 py-0.5 rounded-full border border-[#BDD7F5]">
+            Speak Now
+          </span>
         </div>
       )}
 
       {/* Messages Scroll Area */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-4">
+      <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-white">
         {messages.map((msg) => (
           <div
             key={msg.id}
             className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
           >
             <div
-              className={`max-w-[85%] p-3.5 rounded-2xl text-xs sm:text-sm whitespace-pre-line leading-relaxed shadow-sm ${
+              className={`max-w-[85%] p-3.5 rounded-2xl text-xs sm:text-sm whitespace-pre-line leading-relaxed shadow-xs ${
                 msg.sender === 'user'
-                  ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-navy-900 font-medium rounded-tr-none'
-                  : 'bg-navy-800/90 text-slate-100 border border-white/10 rounded-tl-none'
+                  ? 'bg-[#4A90D9] text-white font-medium rounded-tr-none'
+                  : 'bg-[#F0F6FF] text-[#1A1A2E] border border-[#E0EAF4] rounded-tl-none'
               }`}
             >
               {msg.text}
             </div>
 
-            <div className="flex items-center gap-2 mt-1 px-1 text-[10px] text-slate-500">
+            <div className="flex items-center gap-2 mt-1 px-1 text-[10px] text-[#5A6A7A]">
               <span>{msg.timestamp}</span>
-              {msg.agent && <span className="text-teal-400/80">• {msg.agent}</span>}
+              {msg.agent && <span className="text-[#4A90D9] font-medium">• {msg.agent}</span>}
             </div>
           </div>
         ))}
@@ -387,11 +388,11 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
 
       {/* Direct Call Fallback Banner */}
       {failedAttempts >= 3 && (
-        <div className="bg-amber-500/10 border-t border-amber-500/20 p-3 text-xs text-amber-300 flex items-center justify-between">
+        <div className="bg-[#FFF9E6] border-t border-[#FFE7A3] p-3 text-xs text-[#8A6D3B] flex items-center justify-between">
           <span>Having trouble picking date/time?</span>
           <a
             href="tel:+15552345678"
-            className="px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-200 font-semibold flex items-center gap-1 transition-colors"
+            className="px-3 py-1 rounded-full bg-white hover:bg-[#FFF4D1] border border-[#FFE7A3] text-[#8A6D3B] font-semibold flex items-center gap-1 transition-colors"
           >
             <Phone className="w-3.5 h-3.5" /> Call +1 (555) 234-5678
           </a>
@@ -399,24 +400,24 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
       )}
 
       {/* Quick Reply Chips */}
-      <div className="px-3 py-2 bg-navy-900/60 border-t border-white/5 flex gap-2 overflow-x-auto no-scrollbar">
+      <div className="px-3 py-2 bg-[#F8FAFC] border-t border-[#E0EAF4] flex gap-2 overflow-x-auto no-scrollbar">
         <button
           onClick={() => sendMessage("Mujhe Dr. Fatima ke sath appointment book karni hai")}
-          className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/5 hover:bg-teal-500/20 border border-white/10 hover:border-teal-500/40 text-xs text-slate-300 hover:text-teal-300 transition-colors"
+          className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white hover:bg-[#EAF3FB] border border-[#E0EAF4] hover:border-[#BDD7F5] text-xs text-[#5A6A7A] hover:text-[#4A90D9] transition-colors shadow-xs"
         >
           📅 Book Appointment
         </button>
         <button
           onClick={() => sendMessage("Clinic ke timings aur address kya hain?")}
-          className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/5 hover:bg-teal-500/20 border border-white/10 hover:border-teal-500/40 text-xs text-slate-300 hover:text-teal-300 transition-colors"
+          className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white hover:bg-[#EAF3FB] border border-[#E0EAF4] hover:border-[#BDD7F5] text-xs text-[#5A6A7A] hover:text-[#4A90D9] transition-colors shadow-xs"
         >
           📍 Timings & Location
         </button>
         <button
           onClick={() => sendMessage("Check available slots for today")}
-          className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/5 hover:bg-teal-500/20 border border-white/10 hover:border-teal-500/40 text-xs text-slate-300 hover:text-teal-300 transition-colors"
+          className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white hover:bg-[#EAF3FB] border border-[#E0EAF4] hover:border-[#BDD7F5] text-xs text-[#5A6A7A] hover:text-[#4A90D9] transition-colors shadow-xs"
         >
-          ⏰ Check Available Slots
+          ⏰ Available Slots
         </button>
       </div>
 
@@ -426,14 +427,14 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           e.preventDefault();
           sendMessage();
         }}
-        className="p-3 bg-navy-900 border-t border-white/10 flex items-center gap-2"
+        className="p-3 bg-white border-t border-[#E0EAF4] flex items-center gap-2"
       >
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Message in Roman Urdu or English..."
-          className="flex-1 bg-white/5 text-white text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-white/10 focus:outline-none focus:border-teal-400 transition-colors placeholder:text-slate-500"
+          className="flex-1 bg-[#F0F6FF] text-[#1A1A2E] text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-[#E0EAF4] focus:outline-none focus:border-[#4A90D9] transition-colors placeholder:text-[#5A6A7A]"
         />
 
         {/* WhatsApp Style Voice Mic Button */}
@@ -450,16 +451,16 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           }
           className={`p-2.5 rounded-xl border transition-all flex items-center justify-center ${
             !VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID
-              ? "bg-white/5 border-white/5 text-slate-600 cursor-not-allowed"
+              ? "bg-[#F0F6FF] border-[#E0EAF4] text-[#A0AEC0] cursor-not-allowed"
               : isVoiceActive 
-              ? "bg-teal-500/20 border-teal-500/50 text-teal-300 shadow-md shadow-teal-500/20" 
-              : "bg-white/5 border-white/10 text-slate-300 hover:text-white hover:bg-white/10"
+              ? "bg-[#EAF3FB] border-[#4A90D9] text-[#4A90D9] shadow-xs" 
+              : "bg-[#F0F6FF] border-[#E0EAF4] text-[#5A6A7A] hover:text-[#4A90D9] hover:bg-[#EAF3FB]"
           }`}
         >
           {isVoiceActive ? (
-            <Mic className="w-4 h-4 text-teal-400 animate-pulse" />
+            <Mic className="w-4 h-4 text-[#4A90D9] animate-pulse" />
           ) : (
-            <Mic className="w-4 h-4 text-teal-400" />
+            <Mic className="w-4 h-4 text-[#4A90D9]" />
           )}
         </button>
 
@@ -467,7 +468,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         <button
           type="submit"
           disabled={!input.trim()}
-          className="gradient-btn p-2.5 rounded-xl text-navy-900 disabled:opacity-40 transition-opacity flex items-center justify-center"
+          className="bg-[#4A90D9] hover:bg-[#2C6FAC] text-white p-2.5 rounded-xl disabled:opacity-40 transition-opacity flex items-center justify-center shadow-xs"
         >
           <Send className="w-4 h-4" />
         </button>

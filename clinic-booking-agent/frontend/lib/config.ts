@@ -1,5 +1,5 @@
 /**
- * Centralized configuration helper for CarePulse AI Frontend.
+ * Centralized configuration helper for AL-RAFAI CLINIC Frontend.
  * Ensures consistent environment variable resolution with sensible defaults.
  */
 
@@ -12,4 +12,4 @@ export const WS_URL = process.env.NEXT_PUBLIC_WS_URL ||
 export const VAPI_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY || '';
 export const VAPI_ASSISTANT_ID = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID || '';
 
-export const ADMIN_API_KEY = process.env.NEXT_PUBLIC_ADMIN_API_KEY || 'carepulse-secret-admin-key-2026';
+export const ADMIN_API_KEY = process.env.NEXT_PUBLIC_ADMIN_API_KEY || 'b6423328-e79e-4772-9342-bc856e45768e';

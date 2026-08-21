@@ -20,7 +20,7 @@ logger = logging.getLogger("main")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """FastAPI lifespan event handler for startup & shutdown."""
-    logger.info("Initializing CarePulse Clinic Chatbot Backend...")
+    logger.info("Initializing AL-RAFAI CLINIC Backend...")
     os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
     
     # Store sheets service in app state
@@ -29,10 +29,10 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    logger.info("Shutting down CarePulse Clinic Chatbot Backend...")
+    logger.info("Shutting down AL-RAFAI CLINIC Backend...")
 
 app = FastAPI(
-    title="CarePulse AI Clinic Booking Backend",
+    title="AL-RAFAI CLINIC AI Booking Backend",
     version="1.0.0",
     description="FastAPI + OpenAI Agents SDK appointment booking backend with Google Sheets & Twilio WhatsApp notifications.",
     lifespan=lifespan

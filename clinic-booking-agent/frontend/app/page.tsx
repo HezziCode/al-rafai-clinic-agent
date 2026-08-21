@@ -28,7 +28,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-navy-900 text-slate-100 selection:bg-teal-500 selection:text-navy-900">
+    <div className="min-h-screen flex flex-col bg-white text-[#1A1A2E] selection:bg-[#EAF3FB] selection:text-[#2C6FAC]">
       
       {/* Navigation Bar */}
       <Navbar 
@@ -55,53 +55,55 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-navy-950 py-12 px-4 lg:px-8 mt-16">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-xs text-slate-400">
+      <footer className="border-t border-[#E0EAF4] bg-[#F0F6FF] py-12 px-4 lg:px-8 mt-16">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-xs text-[#5A6A7A]">
           
           <div>
-            <div className="flex items-center gap-2 text-white font-bold text-base mb-3">
-              <Stethoscope className="w-5 h-5 text-teal-400" />
-              CarePulse Wellness Clinic
+            <div className="flex items-center gap-2 text-[#1A1A2E] font-bold text-base mb-3">
+              <div className="w-7 h-7 rounded-lg bg-[#EAF3FB] border border-[#BDD7F5] flex items-center justify-center text-[#4A90D9]">
+                <Stethoscope className="w-4 h-4" />
+              </div>
+              AL-RAFAI CLINIC
             </div>
-            <p className="leading-relaxed text-slate-400">
+            <p className="leading-relaxed text-[#5A6A7A]">
               Single-doctor medical practice led by Dr. Fatima. Providing compassionate, unhurried, 1-on-1 healthcare for all your primary medical needs.
             </p>
           </div>
 
           <div>
-            <h4 className="text-white font-semibold text-sm mb-3">Clinic Hours & Location</h4>
+            <h4 className="text-[#1A1A2E] font-bold text-sm mb-3">Clinic Hours & Location</h4>
             <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-slate-300">
-                <Clock className="w-4 h-4 text-teal-400" />
+              <li className="flex items-center gap-2 text-[#5A6A7A]">
+                <Clock className="w-4 h-4 text-[#4A90D9]" />
                 <span>Working Hours: 12:00 PM – 6:00 PM Daily</span>
               </li>
-              <li className="flex items-center gap-2 text-slate-300">
-                <MapPin className="w-4 h-4 text-cyan-400" />
+              <li className="flex items-center gap-2 text-[#5A6A7A]">
+                <MapPin className="w-4 h-4 text-[#4A90D9]" />
                 <span>742 Evergreen Terrace, Suite 100</span>
               </li>
-              <li className="flex items-center gap-2 text-slate-300">
-                <Phone className="w-4 h-4 text-emerald-400" />
+              <li className="flex items-center gap-2 text-[#5A6A7A]">
+                <Phone className="w-4 h-4 text-[#4A90D9]" />
                 <span>Phone: +1 (555) 234-5678</span>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-white font-semibold text-sm mb-3">Single Doctor Commitment</h4>
+            <h4 className="text-[#1A1A2E] font-bold text-sm mb-3">Single Doctor Commitment</h4>
             <p className="leading-relaxed">
               Every booking is saved to our doctor-facing Google Sheet and triggers an instant WhatsApp alert directly to Dr. Fatima. Zero double-booking guarantee.
             </p>
-            <div className="mt-4 inline-flex items-center gap-1.5 text-teal-400 font-medium">
-              <ShieldCheck className="w-4 h-4" /> HIPAA Compliant & Secure
+            <div className="mt-4 inline-flex items-center gap-1.5 text-[#27AE60] font-semibold bg-[#E8F8F0] px-2.5 py-1 rounded-full border border-[#B7ECC9]">
+              <ShieldCheck className="w-4 h-4" /> Verified & Secure Practice
             </div>
           </div>
 
         </div>
 
-        <div className="max-w-7xl mx-auto border-t border-white/5 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500">
-          <p>© {new Date().getFullYear()} CarePulse Wellness Clinic. All rights reserved.</p>
-          <p className="flex items-center gap-1">
-            Built with Next.js 14, FastAPI & OpenAI Agents SDK <Heart className="w-3 h-3 text-teal-400 fill-teal-400" />
+        <div className="max-w-7xl mx-auto border-t border-[#E0EAF4] mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#5A6A7A]">
+          <p>© {new Date().getFullYear()} AL-RAFAI CLINIC. All rights reserved.</p>
+          <p className="flex items-center gap-1 mt-2 sm:mt-0">
+            Powered by Next.js 14, FastAPI & OpenAI Agents SDK <Heart className="w-3 h-3 text-[#4A90D9] fill-[#4A90D9]" />
           </p>
         </div>
       </footer>
