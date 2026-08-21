@@ -103,7 +103,16 @@ export default function Home() {
         <div className="max-w-7xl mx-auto border-t border-[#E0EAF4] mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#5A6A7A]">
           <p>© {new Date().getFullYear()} AL-RAFAI CLINIC. All rights reserved.</p>
           <p className="flex items-center gap-1 mt-2 sm:mt-0">
-            Powered by Next.js 14, FastAPI & OpenAI Agents SDK <Heart className="w-3 h-3 text-[#4A90D9] fill-[#4A90D9]" />
+            Designed & Developed by{" "}
+            <a 
+              href="https://www.linkedin.com/in/huzaifasys" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="font-bold text-[#4A90D9] hover:text-[#2C6FAC] hover:underline transition-colors"
+            >
+              Huzaifa Developer
+            </a>{" "}
+            <Heart className="w-3.5 h-3.5 text-[#4A90D9] fill-[#4A90D9]" />
           </p>
         </div>
       </footer>
