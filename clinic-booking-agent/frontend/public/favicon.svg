@@ -1,7 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <rect width="64" height="64" rx="14" fill="#4A90D9"/>
-  <!-- Medical Cross -->
-  <path d="M26 14H38V26H50V38H38V50H26V38H14V26H26V14Z" fill="white" opacity="0.95"/>
-  <!-- Heart Accent -->
-  <path d="M32 25C30 22 26 22 24 24.5C22 27 24 30.5 32 36C40 30.5 42 27 40 24.5C38 22 34 22 32 25Z" fill="#4A90D9"/>
+  <!-- Perfect Circle Background -->
+  <circle cx="32" cy="32" r="32" fill="#4A90D9"/>
+  <!-- Stylized Medical Cross with soft rounded edges -->
+  <path d="M26 15C26 13.8954 26.8954 13 28 13H36C37.1046 13 38 13.8954 38 15V26H49C50.1046 26 51 26.8954 51 28V36C51 37.1046 50.1046 38 49 38H38V49C38 50.1046 37.1046 51 36 51H28C26.8954 51 26 50.1046 26 49V38H15C13.8954 38 13 37.1046 13 36V28C13 26.8954 13.8954 26 15 26H26V15Z" fill="white"/>
+  <!-- Center Heart Silhouette -->
+  <path d="M32 26C30.2 23.5 27 23.5 25.2 25.5C23.4 27.6 25 30.5 32 35.5C39 30.5 40.6 27.6 38.8 25.5C37 23.5 33.8 23.5 32 26Z" fill="#4A90D9"/>
 </svg>
