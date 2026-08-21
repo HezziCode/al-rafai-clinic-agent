@@ -4,6 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "AL-RAFAI CLINIC | Dr. Fatima | Medical Consultation & Appointment Booking",
   description: "Book 1-on-1 medical consultations with Dr. Fatima at AL-RAFAI CLINIC. AI-powered booking, instant slot availability, and WhatsApp confirmations.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({
