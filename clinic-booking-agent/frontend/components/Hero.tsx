@@ -45,15 +45,15 @@ export const Hero: React.FC<HeroProps> = ({ onOpenChat, onScrollToSlots }) => {
                 onClick={onOpenChat}
                 className="bg-primary hover:bg-primary-dark text-white rounded-full px-8 py-4 font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg transition-all hover:scale-[1.02]"
               >
-                <span>🤖</span>
+                <Bot className="w-5 h-5 text-white" />
                 <span>Book via AI Chat / Voice</span>
               </button>
 
               <button
                 onClick={onScrollToSlots}
-                className="border-2 border-primary text-primary hover:bg-primary-light rounded-full px-8 py-4 font-bold text-sm sm:text-base flex items-center justify-center gap-2 bg-white transition-all hover:scale-[1.02] shadow-xs"
+                className="border-2 border-primary text-primary hover:bg-primary-light rounded-full px-8 py-4 font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 bg-white transition-all hover:scale-[1.02] shadow-xs"
               >
-                <span>📅</span>
+                <Calendar className="w-5 h-5 text-primary" />
                 <span>Check Today's Slots</span>
               </button>
             </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, X, Send, Phone, Mic, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Bot, X, Send, Phone, Mic, Sparkles, CheckCircle2, AlertCircle, Calendar, MapPin, Clock } from 'lucide-react';
 import Vapi from '@vapi-ai/web';
 import { WS_URL, VAPI_PUBLIC_KEY, VAPI_ASSISTANT_ID } from '@/lib/config';
 
@@ -568,29 +568,32 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         <button
           onClick={() => sendMessage("Mujhe Dr. Fatima ke sath appointment book karni hai")}
           disabled={isStreaming}
-          className={`whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-border text-xs text-text-mid font-semibold shadow-xs transition-all ${
+          className={`whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-border text-xs text-text-mid font-semibold shadow-xs transition-all flex items-center gap-1.5 ${
             isStreaming ? 'opacity-40 cursor-not-allowed' : 'hover:bg-primary-light hover:border-primary hover:text-primary'
           }`}
         >
-          📅 Book Appointment
+          <Calendar className="w-3.5 h-3.5 text-primary" />
+          <span>Book Appointment</span>
         </button>
         <button
           onClick={() => sendMessage("Clinic ke timings aur address kya hain?")}
           disabled={isStreaming}
-          className={`whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-border text-xs text-text-mid font-semibold shadow-xs transition-all ${
+          className={`whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-border text-xs text-text-mid font-semibold shadow-xs transition-all flex items-center gap-1.5 ${
             isStreaming ? 'opacity-40 cursor-not-allowed' : 'hover:bg-primary-light hover:border-primary hover:text-primary'
           }`}
         >
-          📍 Timings & Location
+          <MapPin className="w-3.5 h-3.5 text-primary" />
+          <span>Timings & Location</span>
         </button>
         <button
           onClick={() => sendMessage("Check available slots for today")}
           disabled={isStreaming}
-          className={`whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-border text-xs text-text-mid font-semibold shadow-xs transition-all ${
+          className={`whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-border text-xs text-text-mid font-semibold shadow-xs transition-all flex items-center gap-1.5 ${
             isStreaming ? 'opacity-40 cursor-not-allowed' : 'hover:bg-primary-light hover:border-primary hover:text-primary'
           }`}
         >
-          ⏰ Available Slots
+          <Clock className="w-3.5 h-3.5 text-primary" />
+          <span>Available Slots</span>
         </button>
       </div>
 

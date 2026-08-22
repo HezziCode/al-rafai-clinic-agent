@@ -224,8 +224,9 @@ export const DoctorPinModal: React.FC<DoctorPinModalProps> = ({ isOpen, onClose,
         </form>
 
         {/* Security Footer Note */}
-        <p className="text-[11px] text-text-light text-center mt-6 font-medium">
-          🔒 Secure access protected for Dr. Fatima's practice.
+        <p className="text-[11px] text-text-light text-center mt-6 font-medium flex items-center justify-center gap-1">
+          <Lock className="w-3 h-3 text-primary" />
+          <span>Secure access protected for Dr. Fatima's practice.</span>
         </p>
 
       </div>
