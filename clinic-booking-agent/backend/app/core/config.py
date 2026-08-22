@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     GOOGLE_SERVICE_ACCOUNT_JSON: str = ""
 
     FRONTEND_ORIGIN: str = "http://localhost:3000"
-    ADMIN_API_KEY: str = "carepulse-secret-admin-key-2026"
+    ADMIN_API_KEY: str = "b6423328-e79e-4772-9342-bc856e45768e"
 
     TWILIO_ACCOUNT_SID: str = ""
     TWILIO_AUTH_TOKEN: str = ""

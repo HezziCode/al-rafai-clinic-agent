@@ -1,12 +1,12 @@
 # 🎙️ Vapi AI Voice Assistant Configuration (Dr. Fatima Clinic - Roman Urdu)
 
-This file contains the complete system prompt, first message, voice settings, and tool definitions for the **CarePulse Clinic Voice Assistant** for **Dr. Fatima**.
+This file contains the complete system prompt, first message, voice settings, and tool definitions for the **AL-RAFAI CLINIC Voice Assistant** for **Dr. Fatima**.
 
 ---
 
 ## 1. Assistant Overview & Settings
 
-- **Assistant Name**: `CarePulse Dr. Fatima Voice Receptionist`
+- **Assistant Name**: `AL-RAFAI CLINIC Dr. Fatima Voice Receptionist`
 - **First Message (Roman Urdu)**:
   > `"Assalam-o-Alaikum! Main Dr. Fatima ke clinic ki AI assistant bol rahi hoon. Main aapki appointment book karne mein kya madad kar sakti hoon?"`
 - **Language**: Roman Urdu (with English fallback)
