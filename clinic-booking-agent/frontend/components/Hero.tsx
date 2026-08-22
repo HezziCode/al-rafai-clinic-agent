@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Calendar, Bot, CheckCircle2, MessageCircle, FileSpreadsheet, Mic, Star, Clock } from 'lucide-react';
+import { Calendar, Bot, CheckCircle2, ShieldCheck, Star, Clock } from 'lucide-react';
 
 interface HeroProps {
   onOpenChat: () => void;
@@ -53,18 +53,18 @@ export const Hero: React.FC<HeroProps> = ({ onOpenChat, onScrollToSlots }) => {
             </div>
           </div>
 
-          {/* 3 Inline Trust Micro-Badges */}
+          {/* Patient-Centric Medical Trust Signals */}
           <div className="pt-8 mt-8 border-t border-border/80 flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm font-semibold text-text-mid">
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-accent" /> WhatsApp Confirmed
+              <CheckCircle2 className="w-4 h-4 text-accent" /> PMDC Registered Doctor
             </span>
             <span className="text-border hidden sm:inline">•</span>
             <span className="flex items-center gap-1.5">
-              <FileSpreadsheet className="w-4 h-4 text-primary" /> Google Sheets Live
+              <ShieldCheck className="w-4 h-4 text-primary" /> 1-on-1 Unhurried Consultations
             </span>
             <span className="text-border hidden sm:inline">•</span>
             <span className="flex items-center gap-1.5">
-              <Mic className="w-4 h-4 text-primary-mid" /> Voice & Chat Supported
+              <Clock className="w-4 h-4 text-primary-mid" /> 12 PM – 6 PM Daily Care
             </span>
           </div>
 
