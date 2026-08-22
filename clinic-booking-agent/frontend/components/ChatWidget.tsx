@@ -28,8 +28,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
       id: 'msg-1',
       sender: 'bot',
       text: "👋 Assalam-o-Alaikum! Main AL-RAFAI CLINIC (Dr. Fatima) ki AI Virtual Assistant hoon.\n\nAap clinic timings (12:00 PM - 6:00 PM Daily), services, address ke baare mein pooch sakte hain ya foran appointment book karwa sakte hain. Main aapki kya madad kar sakti hoon?",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      agent: 'TriageAgent'
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
 
@@ -38,7 +37,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [failedAttempts, setFailedAttempts] = useState(0);
 
-  // New Streaming & Tool Call State
+  // Streaming & Tool Call State
   const [isAgentTyping, setIsAgentTyping] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [activeToolCall, setActiveToolCall] = useState<string | null>(null);
@@ -67,7 +66,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
             {
               id: `vapi-start-${Date.now()}`,
               sender: 'system',
-              text: "🎙️ Vapi Voice Call connected! Speak in Roman Urdu or English.",
+              text: "🎙️ Voice Call connected! Speak naturally in Roman Urdu or English.",
               timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             }
           ]);
@@ -91,7 +90,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
             const role = msg.role === 'user' ? 'user' : 'bot';
             const transcriptText = msg.transcript;
 
-            // Handle partial user voice transcript (live real-time typing preview)
+            // Handle partial user voice transcript (live real-time speech preview)
             if (msg.transcriptType === 'partial' && role === 'user' && transcriptText) {
               setMessages((prev) => {
                 const lastMsg = prev[prev.length - 1];
@@ -125,7 +124,6 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
                     sender: role,
                     text: transcriptText,
                     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    agent: role === 'bot' ? 'VapiVoiceAgent' : undefined,
                     isStreaming: false
                   }
                 ];
@@ -135,20 +133,20 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         });
 
         vapi.on('error', (err: any) => {
-          console.error("Vapi Voice Error:", err);
+          console.error("Voice Error:", err);
           setIsVoiceActive(false);
           setMessages((prev) => [
             ...prev,
             {
               id: `vapi-err-${Date.now()}`,
               sender: 'system',
-              text: `⚠️ Voice Assistant Error: ${err?.message || 'Connection failed'}`,
+              text: `⚠️ Voice Assistant: ${err?.message || 'Connection failed'}`,
               timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             }
           ]);
         });
       } catch (err) {
-        console.error("Failed to initialize Vapi Web SDK:", err);
+        console.error("Failed to initialize Voice SDK:", err);
       }
     }
   }, []);
@@ -210,7 +208,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         {
           id: `vapi-unconfig-${Date.now()}`,
           sender: 'system',
-          text: "ℹ️ Vapi Voice Assistant credentials (NEXT_PUBLIC_VAPI_PUBLIC_KEY & NEXT_PUBLIC_VAPI_ASSISTANT_ID) are not set in frontend/.env.",
+          text: "ℹ️ Voice Assistant credentials are not configured in environment.",
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
@@ -301,11 +299,11 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           reschedule_appointment: '🔄 Rescheduling appointment in Google Sheets...',
           get_clinic_info: '📋 Fetching clinic information...',
           save_patient_details: '💾 Saving patient details...',
-          transfer_to_booking: '📅 Connecting to Booking Assistant...',
-          transfer_to_faq: 'ℹ️ Connecting to Clinic Info Assistant...'
+          transfer_to_booking: '📅 Checking appointment booking...',
+          transfer_to_faq: 'ℹ️ Retrieving clinic details...'
         };
 
-        const label = toolLabels[data.tool_name] || `⚙️ Running ${data.tool_name || 'action'}...`;
+        const label = toolLabels[data.tool_name] || `⚙️ Processing request...`;
 
         setMessages((prev) => [
           ...prev,
@@ -326,17 +324,9 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         setMessages((prev) => prev.filter((m) => !m.isToolCall));
       }
 
-      // 4. AGENT_HANDOFF — Real-time handoff notice
+      // 4. AGENT_HANDOFF
       else if (data.type === 'agent_handoff') {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `handoff-${Date.now()}`,
-            sender: 'system',
-            text: `↪ Transferring to ${data.agent}...`,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          }
-        ]);
+        // Silently transition without exposing developer agent names
       }
 
       // 5. STREAM — Real-time text token delta
@@ -382,7 +372,6 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
               {
                 ...lastMsg,
                 text: data.content || lastMsg.text,
-                agent: data.agent,
                 isStreaming: false
               }
             ];
@@ -394,7 +383,6 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
                 sender: 'bot',
                 text: data.content || '',
                 timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                agent: data.agent,
                 isStreaming: false
               }
             ];
@@ -487,14 +475,14 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         </div>
       </div>
 
-      {/* Voice Mode Status Banner */}
+      {/* Voice Mode Status Banner (Calm Medical Blue Palette) */}
       {isVoiceActive && (
-        <div className="bg-accent-light border-b border-green-200 px-4 py-2 text-xs text-accent-dark font-semibold flex items-center justify-between">
+        <div className="bg-primary-light border-b border-blue-200 px-4 py-2.5 text-xs text-primary font-bold flex items-center justify-between shadow-inner">
           <span className="flex items-center gap-2">
-            <Mic className="w-3.5 h-3.5 text-accent animate-pulse" />
-            Vapi Voice Assistant Active (Roman Urdu / English)
+            <Mic className="w-3.5 h-3.5 text-primary animate-pulse" />
+            Voice Assistant Active (Roman Urdu / English)
           </span>
-          <span className="text-[10px] text-accent font-bold bg-white px-2 py-0.5 rounded-full border border-green-200">
+          <span className="text-[10px] text-primary font-extrabold bg-white px-2.5 py-0.5 rounded-full border border-blue-200 shadow-xs">
             Speak Now
           </span>
         </div>
@@ -512,7 +500,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
       <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-white">
         {messages.map((msg) => (
           <React.Fragment key={msg.id}>
-            {/* System / Tool Call / Handoff Message */}
+            {/* System / Tool Call / Status Message */}
             {msg.sender === 'system' ? (
               <div className="flex justify-center my-1.5">
                 <span className="text-[11px] text-text-mid bg-warm border border-border rounded-full px-3.5 py-1 font-medium italic flex items-center gap-1.5 shadow-xs">
@@ -539,9 +527,9 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
                   )}
                 </div>
 
-                <div className="flex items-center gap-2 mt-1 px-1 text-[10px] text-text-light">
+                {/* Clean Timestamp (No Developer Agent Names) */}
+                <div className="flex items-center gap-2 mt-1 px-1 text-[10px] text-text-light font-medium">
                   <span>{msg.timestamp}</span>
-                  {msg.agent && <span className="text-primary font-semibold">• {msg.agent}</span>}
                 </div>
               </div>
             )}
@@ -625,14 +613,14 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           }`}
         />
 
-        {/* WhatsApp Style Voice Mic Button */}
+        {/* WhatsApp Style Voice Mic Button (Matching Blue Palette) */}
         <button
           type="button"
           onClick={toggleVoiceCall}
           disabled={!VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID}
           title={
             !VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID
-              ? "Vapi Voice Assistant unconfigured in .env"
+              ? "Voice Assistant unconfigured in .env"
               : isVoiceActive
               ? "End Voice Call"
               : "Start Voice Call"
@@ -641,7 +629,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
             !VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID
               ? "bg-warm border-border text-text-light cursor-not-allowed opacity-50"
               : isVoiceActive 
-              ? "bg-accent text-white border-accent shadow-xs" 
+              ? "bg-primary text-white border-primary shadow-md" 
               : "bg-warm border-border text-primary hover:text-primary-dark hover:bg-primary-light"
           }`}
         >
@@ -652,7 +640,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           )}
         </button>
 
-        {/* Send Message Button (Disabled during active streaming) */}
+        {/* Send Message Button */}
         <button
           type="submit"
           disabled={!input.trim() || isStreaming}
