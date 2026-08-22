@@ -13,3 +13,5 @@ export const VAPI_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY || '';
 export const VAPI_ASSISTANT_ID = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID || '';
 
 export const ADMIN_API_KEY = process.env.NEXT_PUBLIC_ADMIN_API_KEY || 'b6423328-e79e-4772-9342-bc856e45768e';
+
+export const DOCTOR_PIN = process.env.NEXT_PUBLIC_DOCTOR_PIN || '1234';

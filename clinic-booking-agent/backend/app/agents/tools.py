@@ -87,7 +87,13 @@ def book_appointment(
             f"Doctor has been notified via WhatsApp."
         )
     else:
-        return f"❌ BOOKING FAILED: {result_msg_or_id}"
+        return (
+            f"❌ SLOT ALREADY BOOKED: The time slot {start_time} on "
+            f"{appointment_date} is already taken by another patient. "
+            f"Please call get_available_slots for {appointment_date} again "
+            f"to see which slots are still open, and ask the patient to "
+            f"choose a different time."
+        )
 
 @function_tool
 def save_patient_details(

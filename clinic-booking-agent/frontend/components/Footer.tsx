@@ -136,7 +136,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenChat }) => {
             <ul className="space-y-3 text-sm text-blue-100/80">
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-blue-300 shrink-0 mt-0.5" />
-                <span>742 Evergreen Terrace, Suite 100</span>
+                <span>5A/2, North Karachi</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-blue-300 shrink-0" />

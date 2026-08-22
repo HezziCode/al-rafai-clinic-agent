@@ -30,7 +30,13 @@ export const Hero: React.FC<HeroProps> = ({ onOpenChat, onScrollToSlots }) => {
 
             {/* Subtitle */}
             <p className="text-base sm:text-lg text-text-mid max-w-lg leading-relaxed font-normal">
-              Expert 1-on-1 consultations at <strong className="text-text-dark font-semibold">AL-RAFAI CLINIC</strong> with Dr. Fatima. Daily from <strong className="text-primary font-semibold">12 PM – 6 PM</strong>. Book in 60 seconds via AI chat or voice — in Roman Urdu or English.
+              Visit Dr. Fatima at her clinic in{' '}
+              <strong className="text-text-dark font-semibold">
+                5A/2, North Karachi
+              </strong>
+              , open daily from{' '}
+              <strong className="text-primary font-semibold">12 PM to 6 PM</strong>
+              . Walk in or book your slot instantly via AI chat or voice call.
             </p>
 
             {/* CTAs Stacked Row */}

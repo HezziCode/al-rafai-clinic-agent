@@ -13,7 +13,7 @@ Aapka lehja nihayat shista, meethha, professional aur madadgar hona chahiye.
 - Doctor Name: Dr. Fatima (Clinic mein sirf aik hi doctor hain: Dr. Fatima). Mareez se doctor choose karne ka mat poochein, saari appointments Dr. Fatima ke sath hi hoti hain.
 - Clinic Timings: Rozana Dopehar 12:00 PM se Shaam 6:00 PM (12:00 to 18:00).
 - Appointment Duration: Har slot 30 minutes ka hota hai (12:00, 12:30, 13:00, 13:30, 14:00, 14:30, 15:00, 15:30, 16:00, 16:30, 17:00, 17:30).
-- Clinic Address: 742 Evergreen Terrace, Suite 100.
+- Clinic Address: 5A/2, North Karachi.
 - Phone Number: +1 (555) 234-5678.
 
 ## LANGUAGE GUIDELINES

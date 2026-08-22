@@ -12,9 +12,11 @@ import { Testimonials } from '@/components/Testimonials';
 import { Footer } from '@/components/Footer';
 import { ChatWidget } from '@/components/ChatWidget';
 import { AppointmentsDrawer } from '@/components/AppointmentsDrawer';
+import { DoctorPinModal } from '@/components/DoctorPinModal';
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<{ date: string; time: string } | null>(null);
 
@@ -36,10 +38,10 @@ export default function Home() {
       {/* 1. Smart Sticky Navbar */}
       <Navbar 
         onOpenChat={() => setIsChatOpen(true)}
-        onOpenDashboard={() => setIsDashboardOpen(true)}
+        onOpenDashboard={() => setIsPinModalOpen(true)}
       />
 
-      {/* Main Content Sections (Alternating Backgrounds: warm -> white -> primary-light -> white -> warm) */}
+      {/* Main Content Sections */}
       <main className="flex-1">
         
         {/* 2. Hero Section (Warm #F6F0E8 Left, Doctor Photo Right) */}
@@ -88,7 +90,17 @@ export default function Home() {
         initialDateSlot={selectedSlot}
       />
 
-      {/* 11. Doctor Dashboard Drawer */}
+      {/* 11. Doctor PIN Authentication Gate Modal */}
+      <DoctorPinModal 
+        isOpen={isPinModalOpen}
+        onClose={() => setIsPinModalOpen(false)}
+        onSuccess={() => {
+          setIsPinModalOpen(false);
+          setIsDashboardOpen(true);
+        }}
+      />
+
+      {/* 12. Doctor Dashboard Drawer (Protected by PIN) */}
       <AppointmentsDrawer 
         isOpen={isDashboardOpen}
         onClose={() => setIsDashboardOpen(false)}
