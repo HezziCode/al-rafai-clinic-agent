@@ -293,10 +293,10 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         setIsStreaming(true);
 
         const toolLabels: Record<string, string> = {
-          get_available_slots: '🔍 Checking available slots in Google Sheets...',
-          book_appointment: '📝 Booking your appointment in Google Sheets...',
+          get_available_slots: '🔍 Checking available appointment slots...',
+          book_appointment: '📝 Confirming your appointment...',
           cancel_appointment: '❌ Processing appointment cancellation...',
-          reschedule_appointment: '🔄 Rescheduling appointment in Google Sheets...',
+          reschedule_appointment: '🔄 Rescheduling your appointment...',
           get_clinic_info: '📋 Fetching clinic information...',
           save_patient_details: '💾 Saving patient details...',
           transfer_to_booking: '📅 Checking appointment booking...',
@@ -427,7 +427,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           Chat / Voice Booking
         </div>
 
-        {/* Floating WhatsApp-Style Button */}
+        {/* Floating AI Booking Button */}
         <button
           onClick={onClose}
           title="Open AI Booking Assistant"
@@ -594,7 +594,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         </button>
       </div>
 
-      {/* Input Form (WhatsApp Style with Mic beside Send + Streaming Guard) */}
+      {/* Input Form with Mic beside Send + Streaming Guard */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -613,7 +613,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           }`}
         />
 
-        {/* WhatsApp Style Voice Mic Button (Matching Blue Palette) */}
+        {/* Voice Mic Button (Matching Blue Palette) */}
         <button
           type="button"
           onClick={toggleVoiceCall}

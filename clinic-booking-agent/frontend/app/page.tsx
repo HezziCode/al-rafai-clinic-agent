@@ -83,7 +83,7 @@ export default function Home() {
         onOpenChat={() => setIsChatOpen(true)}
       />
 
-      {/* 10. Floating WhatsApp-Style AI Chat Widget Button & Slide-up Panel */}
+      {/* 10. Floating AI Chat Widget Button & Slide-up Panel */}
       <ChatWidget 
         isOpen={isChatOpen}
         onClose={() => setIsChatOpen(!isChatOpen)}

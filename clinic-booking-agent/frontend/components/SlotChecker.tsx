@@ -47,7 +47,7 @@ export const SlotChecker: React.FC<SlotCheckerProps> = ({ onSelectSlot }) => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-border">
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary-light text-primary text-xs font-bold mb-2 border border-blue-200">
-              <Clock className="w-3.5 h-3.5" /> Real-Time Google Sheets Schedule
+              <Clock className="w-3.5 h-3.5" /> Live Clinic Schedule
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-text-dark tracking-tight">
               Check Dr. Fatima's Availability
@@ -75,7 +75,7 @@ export const SlotChecker: React.FC<SlotCheckerProps> = ({ onSelectSlot }) => {
         {loading ? (
           <div className="py-12 flex flex-col items-center justify-center text-text-mid gap-3">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            <p className="text-xs font-medium">Checking live appointment ledger in Google Sheets...</p>
+            <p className="text-xs font-medium">Checking available appointment times for Dr. Fatima...</p>
           </div>
         ) : slots.length > 0 ? (
           <div>

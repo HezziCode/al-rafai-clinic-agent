@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { X, FileText, Calendar, User, Phone, CheckCircle, RefreshCw, MessageSquare, Clock, History, Filter } from 'lucide-react';
+import { X, Calendar, User, Phone, CheckCircle, RefreshCw, MessageSquare, Clock, History, Filter } from 'lucide-react';
 import { API_URL, ADMIN_API_KEY } from '@/lib/config';
 
 interface AppointmentsDrawerProps {
@@ -81,10 +81,10 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
               Doctor Dashboard
             </span>
             <h2 className="text-xl font-extrabold text-white flex items-center gap-2 mt-2">
-              <FileText className="w-5 h-5 text-blue-200" /> Google Sheets Ledger
+              <Calendar className="w-5 h-5 text-blue-200" /> Patient Appointments & Schedule
             </h2>
             <p className="text-xs text-blue-100 mt-0.5 font-medium">
-              AL-RAFAI CLINIC • Dr. Fatima (12 PM – 6 PM Daily)
+              AL-RAFAI CLINIC • Dr. Fatima (12:00 PM – 6:00 PM Daily)
             </p>
           </div>
 
@@ -92,7 +92,7 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
             <button
               onClick={fetchAppointments}
               className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
-              title="Refresh Google Sheets Ledger"
+              title="Refresh Appointments List"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -131,7 +131,7 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
         <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-[#F8FAFC]">
           {loading && appointments.length === 0 ? (
             <div className="text-center py-16 text-text-light text-sm font-medium">
-              Loading real-time appointment records from Google Sheets...
+              Loading scheduled patient appointments...
             </div>
           ) : filteredAppointments.length > 0 ? (
             filteredAppointments.map((apt, idx) => (
@@ -141,7 +141,7 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
                     {apt.Booking_ID}
                   </span>
                   <span className="text-xs font-bold px-3 py-1 rounded-full bg-accent-light text-accent border border-green-200">
-                    {apt.Status || 'BOOKED'}
+                    {apt.Status || 'CONFIRMED'}
                   </span>
                 </div>
 
@@ -174,7 +174,7 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
             <div className="text-center py-16 bg-white rounded-2xl border border-border p-8 shadow-xs">
               <Calendar className="w-10 h-10 text-primary mx-auto mb-3" />
               <p className="text-base font-bold text-text-dark">No Upcoming Appointments</p>
-              <p className="text-xs text-text-mid mt-1 mb-4">You have appointments in past dates.</p>
+              <p className="text-xs text-text-mid mt-1 mb-4">You have appointments in previous dates.</p>
               <button
                 onClick={() => setShowPast(true)}
                 className="px-4 py-2 bg-primary-light hover:bg-primary text-primary hover:text-white rounded-full text-xs font-bold border border-blue-200 transition-colors inline-flex items-center gap-1.5"
@@ -187,16 +187,16 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
             <div className="text-center py-16 bg-white rounded-2xl border border-border p-8 shadow-xs">
               <MessageSquare className="w-10 h-10 text-primary mx-auto mb-3" />
               <p className="text-base font-bold text-text-dark">No Appointments Booked Yet</p>
-              <p className="text-xs text-text-mid mt-1">Book an appointment via the AI Chatbot to see it automatically appear here and in your Google Sheet!</p>
+              <p className="text-xs text-text-mid mt-1">Appointments booked through the clinic website or AI assistant will automatically appear here in real time.</p>
             </div>
           )}
         </div>
 
         {/* Footer info */}
         <div className="p-4 bg-white border-t border-border text-xs text-text-mid flex items-center justify-between font-medium">
-          <span>AL-RAFAI CLINIC • Google Sheets Live</span>
-          <span className="text-accent font-bold flex items-center gap-1">
-            <CheckCircle className="w-3.5 h-3.5" /> WhatsApp Alert Enabled
+          <span>AL-RAFAI CLINIC • Live Patient Records</span>
+          <span className="text-primary font-bold flex items-center gap-1.5">
+            <CheckCircle className="w-3.5 h-3.5 text-accent" /> Auto-Synchronized
           </span>
         </div>
 

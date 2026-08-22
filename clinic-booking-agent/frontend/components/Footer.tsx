@@ -72,7 +72,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenChat }) => {
                 <ShieldCheck className="w-3.5 h-3.5" /> PMDC Verified Practice
               </span>
               <span className="inline-flex items-center gap-1.5 text-xs text-blue-200 font-semibold bg-white/10 px-3 py-1 rounded-full border border-white/15">
-                <MessageSquare className="w-3.5 h-3.5 text-emerald-400" /> WhatsApp Notifications
+                <Sparkles className="w-3.5 h-3.5 text-blue-300" /> Instant Booking Confirmation
               </span>
             </div>
           </div>
@@ -149,8 +149,8 @@ export const Footer: React.FC<FooterProps> = ({ onOpenChat }) => {
                   onClick={onOpenChat}
                   className="w-full py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white flex items-center justify-center gap-2 transition-colors"
                 >
-                  <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Start WhatsApp / AI Chat</span>
+                  <MessageSquare className="w-3.5 h-3.5 text-blue-300" />
+                  <span>Start AI Consultation</span>
                 </button>
               </li>
             </ul>

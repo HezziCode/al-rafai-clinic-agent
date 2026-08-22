@@ -19,13 +19,13 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onOpenChat }) => {
       num: "02",
       icon: CalendarCheck,
       title: "Pick a Slot",
-      desc: "The AI checks Dr. Fatima's real-time Google Sheets schedule and shows open times.",
+      desc: "The AI assistant checks Dr. Fatima's live appointment schedule to show all open slots.",
     },
     {
       num: "03",
       icon: CheckCircle,
       title: "You're Confirmed",
-      desc: "Get an instant WhatsApp booking confirmation with date, time, and clinic directions.",
+      desc: "Receive instant confirmation with your booking ID, reserved time, and clinic visit details.",
     }
   ];
 
