@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, X, Send, Phone, Mic, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Bot, X, Send, Phone, Mic, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
 import Vapi from '@vapi-ai/web';
 import { WS_URL, VAPI_PUBLIC_KEY, VAPI_ASSISTANT_ID } from '@/lib/config';
 
@@ -13,11 +13,13 @@ interface ChatWidgetProps {
 
 interface Message {
   id: string;
-  sender: 'bot' | 'user';
+  sender: 'bot' | 'user' | 'system';
   text: string;
   timestamp: string;
   agent?: string;
   isStreaming?: boolean;
+  isToolCall?: boolean;
+  toolName?: string;
 }
 
 export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initialDateSlot }) => {
@@ -36,6 +38,12 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [failedAttempts, setFailedAttempts] = useState(0);
 
+  // New Streaming & Tool Call State
+  const [isAgentTyping, setIsAgentTyping] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [activeToolCall, setActiveToolCall] = useState<string | null>(null);
+  const [busyToast, setBusyToast] = useState<string | null>(null);
+
   const socketRef = useRef<WebSocket | null>(null);
   const vapiRef = useRef<Vapi | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -45,7 +53,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Initialize Vapi SDK instance safely
+  // Initialize Vapi SDK instance safely with real-time partial transcript streaming
   useEffect(() => {
     if (VAPI_PUBLIC_KEY && !vapiRef.current) {
       try {
@@ -58,10 +66,9 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
             ...prev,
             {
               id: `vapi-start-${Date.now()}`,
-              sender: 'bot',
-              text: "🎙️ Vapi Voice Call connected! Speak now to ask questions or book an appointment.",
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              agent: 'VapiVoiceAgent'
+              sender: 'system',
+              text: "🎙️ Vapi Voice Call connected! Speak in Roman Urdu or English.",
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             }
           ]);
         });
@@ -72,10 +79,9 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
             ...prev,
             {
               id: `vapi-end-${Date.now()}`,
-              sender: 'bot',
+              sender: 'system',
               text: "📞 Voice call ended.",
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              agent: 'VapiVoiceAgent'
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             }
           ]);
         });
@@ -84,17 +90,46 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           if (msg.type === 'transcript') {
             const role = msg.role === 'user' ? 'user' : 'bot';
             const transcriptText = msg.transcript;
-            if (transcriptText && msg.transcriptType === 'final') {
-              setMessages((prev) => [
-                ...prev,
-                {
-                  id: `vapi-trans-${Date.now()}`,
-                  sender: role,
-                  text: transcriptText,
-                  timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                  agent: role === 'bot' ? 'VapiVoiceAgent' : undefined
+
+            // Handle partial user voice transcript (live real-time typing preview)
+            if (msg.transcriptType === 'partial' && role === 'user' && transcriptText) {
+              setMessages((prev) => {
+                const lastMsg = prev[prev.length - 1];
+                if (lastMsg && lastMsg.id.startsWith('voice-partial-')) {
+                  return [
+                    ...prev.slice(0, -1),
+                    { ...lastMsg, text: transcriptText, isStreaming: true }
+                  ];
                 }
-              ]);
+                return [
+                  ...prev,
+                  {
+                    id: `voice-partial-${Date.now()}`,
+                    sender: 'user',
+                    text: transcriptText,
+                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    isStreaming: true
+                  }
+                ];
+              });
+            }
+
+            // Handle final transcript
+            if (msg.transcriptType === 'final' && transcriptText) {
+              setMessages((prev) => {
+                const withoutPartial = prev.filter((m) => !m.id.startsWith('voice-partial-'));
+                return [
+                  ...withoutPartial,
+                  {
+                    id: `vapi-trans-${Date.now()}`,
+                    sender: role,
+                    text: transcriptText,
+                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    agent: role === 'bot' ? 'VapiVoiceAgent' : undefined,
+                    isStreaming: false
+                  }
+                ];
+              });
             }
           }
         });
@@ -106,7 +141,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
             ...prev,
             {
               id: `vapi-err-${Date.now()}`,
-              sender: 'bot',
+              sender: 'system',
               text: `⚠️ Voice Assistant Error: ${err?.message || 'Connection failed'}`,
               timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             }
@@ -139,7 +174,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isAgentTyping, activeToolCall]);
 
   const connectWebSocket = () => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) return;
@@ -174,7 +209,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         ...prev,
         {
           id: `vapi-unconfig-${Date.now()}`,
-          sender: 'bot',
+          sender: 'system',
           text: "ℹ️ Vapi Voice Assistant credentials (NEXT_PUBLIC_VAPI_PUBLIC_KEY & NEXT_PUBLIC_VAPI_ASSISTANT_ID) are not set in frontend/.env.",
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
@@ -190,6 +225,12 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
   };
 
   const sendMessage = (textToSend?: string) => {
+    if (isStreaming) {
+      setBusyToast("Please wait, the AI assistant is still responding...");
+      setTimeout(() => setBusyToast(null), 2500);
+      return;
+    }
+
     const content = textToSend || input;
     if (!content.trim()) return;
 
@@ -202,6 +243,9 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
 
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInput('');
+
+    setIsStreaming(true);
+    setIsAgentTyping(true);
 
     // Ensure WebSocket is connected
     if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
@@ -217,11 +261,15 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
 
       ws.onerror = (err) => {
         setIsConnecting(false);
+        setIsStreaming(false);
+        setIsAgentTyping(false);
         console.error("WebSocket error:", err);
       };
 
       ws.onclose = () => {
         setIsConnecting(false);
+        setIsStreaming(false);
+        setIsAgentTyping(false);
       };
 
       socketRef.current = ws;
@@ -234,7 +282,69 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
     try {
       const data = JSON.parse(event.data);
 
-      if (data.type === 'stream') {
+      // 1. TYPING — Instant ~50ms feedback before LLM tokens generate
+      if (data.type === 'typing') {
+        setIsAgentTyping(true);
+        setIsStreaming(true);
+      }
+
+      // 2. TOOL_CALL — Agent is executing a tool
+      else if (data.type === 'tool_call') {
+        setActiveToolCall(data.tool_name || 'processing');
+        setIsAgentTyping(false);
+        setIsStreaming(true);
+
+        const toolLabels: Record<string, string> = {
+          get_available_slots: '🔍 Checking available slots in Google Sheets...',
+          book_appointment: '📝 Booking your appointment in Google Sheets...',
+          cancel_appointment: '❌ Processing appointment cancellation...',
+          reschedule_appointment: '🔄 Rescheduling appointment in Google Sheets...',
+          get_clinic_info: '📋 Fetching clinic information...',
+          save_patient_details: '💾 Saving patient details...',
+          transfer_to_booking: '📅 Connecting to Booking Assistant...',
+          transfer_to_faq: 'ℹ️ Connecting to Clinic Info Assistant...'
+        };
+
+        const label = toolLabels[data.tool_name] || `⚙️ Running ${data.tool_name || 'action'}...`;
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `tool-${Date.now()}`,
+            sender: 'system',
+            text: label,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isToolCall: true,
+            toolName: data.tool_name
+          }
+        ]);
+      }
+
+      // 3. TOOL_DONE — Remove tool call progress indicator
+      else if (data.type === 'tool_done') {
+        setActiveToolCall(null);
+        setMessages((prev) => prev.filter((m) => !m.isToolCall));
+      }
+
+      // 4. AGENT_HANDOFF — Real-time handoff notice
+      else if (data.type === 'agent_handoff') {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `handoff-${Date.now()}`,
+            sender: 'system',
+            text: `↪ Transferring to ${data.agent}...`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]);
+      }
+
+      // 5. STREAM — Real-time text token delta
+      else if (data.type === 'stream') {
+        setIsAgentTyping(false);
+        setActiveToolCall(null);
+        setIsStreaming(true);
+
         const delta = data.delta || '';
         setMessages((prev) => {
           const lastMsg = prev[prev.length - 1];
@@ -256,7 +366,14 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
             ];
           }
         });
-      } else if (data.type === 'complete') {
+      }
+
+      // 6. COMPLETE — Turn finalized
+      else if (data.type === 'complete') {
+        setIsStreaming(false);
+        setIsAgentTyping(false);
+        setActiveToolCall(null);
+
         setMessages((prev) => {
           const lastMsg = prev[prev.length - 1];
           if (lastMsg && lastMsg.sender === 'bot') {
@@ -283,12 +400,25 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
             ];
           }
         });
-      } else if (data.type === 'error') {
+      }
+
+      // 7. BUSY — Backend guard warning
+      else if (data.type === 'busy') {
+        setBusyToast(data.message || "Please wait, still responding...");
+        setTimeout(() => setBusyToast(null), 2500);
+      }
+
+      // 8. ERROR
+      else if (data.type === 'error') {
+        setIsStreaming(false);
+        setIsAgentTyping(false);
+        setActiveToolCall(null);
+
         setMessages((prev) => [
           ...prev,
           {
             id: `err-${Date.now()}`,
-            sender: 'bot',
+            sender: 'system',
             text: `⚠️ ${data.error || "An error occurred."}`,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           }
@@ -303,7 +433,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
     return (
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
         
-        {/* Small floating pill badge above button */}
+        {/* Floating pill badge above button */}
         <div className="bg-white text-primary border border-border shadow-lg rounded-full px-3.5 py-1 text-xs font-extrabold flex items-center gap-1.5 animate-bounce">
           <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
           Chat / Voice Booking
@@ -370,29 +500,65 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         </div>
       )}
 
+      {/* Busy Toast Banner */}
+      {busyToast && (
+        <div className="bg-amber-100 border-b border-amber-200 px-4 py-2 text-xs text-amber-800 font-semibold flex items-center gap-2 animate-in fade-in duration-200">
+          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+          <span>{busyToast}</span>
+        </div>
+      )}
+
       {/* Messages Scroll Area */}
       <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-white">
         {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
-          >
-            <div
-              className={`max-w-[85%] p-3.5 rounded-2xl text-xs sm:text-sm whitespace-pre-line leading-relaxed shadow-xs ${
-                msg.sender === 'user'
-                  ? 'bg-primary text-white font-medium rounded-tr-none'
-                  : 'bg-primary-light text-text-dark border border-border rounded-tl-none'
-              }`}
-            >
-              {msg.text}
-            </div>
+          <React.Fragment key={msg.id}>
+            {/* System / Tool Call / Handoff Message */}
+            {msg.sender === 'system' ? (
+              <div className="flex justify-center my-1.5">
+                <span className="text-[11px] text-text-mid bg-warm border border-border rounded-full px-3.5 py-1 font-medium italic flex items-center gap-1.5 shadow-xs">
+                  {msg.isToolCall && (
+                    <span className="w-2 h-2 rounded-full bg-primary animate-ping mr-0.5" />
+                  )}
+                  {msg.text}
+                </span>
+              </div>
+            ) : (
+              /* User / Bot Message */
+              <div className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
+                <div
+                  className={`max-w-[85%] p-3.5 rounded-2xl text-xs sm:text-sm whitespace-pre-line leading-relaxed shadow-xs ${
+                    msg.sender === 'user'
+                      ? 'bg-primary text-white font-medium rounded-tr-none'
+                      : 'bg-primary-light text-text-dark border border-border rounded-tl-none'
+                  }`}
+                >
+                  {msg.text}
+                  {/* Blinking live streaming cursor */}
+                  {msg.isStreaming && (
+                    <span className="inline-block w-1 h-3.5 bg-primary ml-1 animate-pulse align-middle rounded-full" />
+                  )}
+                </div>
 
-            <div className="flex items-center gap-2 mt-1 px-1 text-[10px] text-text-light">
-              <span>{msg.timestamp}</span>
-              {msg.agent && <span className="text-primary font-semibold">• {msg.agent}</span>}
+                <div className="flex items-center gap-2 mt-1 px-1 text-[10px] text-text-light">
+                  <span>{msg.timestamp}</span>
+                  {msg.agent && <span className="text-primary font-semibold">• {msg.agent}</span>}
+                </div>
+              </div>
+            )}
+          </React.Fragment>
+        ))}
+
+        {/* 3-Dot Bouncing Typing Indicator */}
+        {isAgentTyping && (
+          <div className="flex items-start gap-2">
+            <div className="bg-primary-light border border-border rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-1.5 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:0ms]" />
+              <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
+              <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
             </div>
           </div>
-        ))}
+        )}
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -413,25 +579,34 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
       <div className="px-3 py-2 bg-warm/60 border-t border-border flex gap-2 overflow-x-auto no-scrollbar">
         <button
           onClick={() => sendMessage("Mujhe Dr. Fatima ke sath appointment book karni hai")}
-          className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white hover:bg-primary-light border border-border hover:border-primary text-xs text-text-mid hover:text-primary transition-colors font-semibold shadow-xs"
+          disabled={isStreaming}
+          className={`whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-border text-xs text-text-mid font-semibold shadow-xs transition-all ${
+            isStreaming ? 'opacity-40 cursor-not-allowed' : 'hover:bg-primary-light hover:border-primary hover:text-primary'
+          }`}
         >
           📅 Book Appointment
         </button>
         <button
           onClick={() => sendMessage("Clinic ke timings aur address kya hain?")}
-          className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white hover:bg-primary-light border border-border hover:border-primary text-xs text-text-mid hover:text-primary transition-colors font-semibold shadow-xs"
+          disabled={isStreaming}
+          className={`whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-border text-xs text-text-mid font-semibold shadow-xs transition-all ${
+            isStreaming ? 'opacity-40 cursor-not-allowed' : 'hover:bg-primary-light hover:border-primary hover:text-primary'
+          }`}
         >
           📍 Timings & Location
         </button>
         <button
           onClick={() => sendMessage("Check available slots for today")}
-          className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white hover:bg-primary-light border border-border hover:border-primary text-xs text-text-mid hover:text-primary transition-colors font-semibold shadow-xs"
+          disabled={isStreaming}
+          className={`whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-border text-xs text-text-mid font-semibold shadow-xs transition-all ${
+            isStreaming ? 'opacity-40 cursor-not-allowed' : 'hover:bg-primary-light hover:border-primary hover:text-primary'
+          }`}
         >
           ⏰ Available Slots
         </button>
       </div>
 
-      {/* Input Form (WhatsApp Style with Mic beside Send) */}
+      {/* Input Form (WhatsApp Style with Mic beside Send + Streaming Guard) */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -443,8 +618,11 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Message in Roman Urdu or English..."
-          className="flex-1 bg-warm text-text-dark text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:border-primary transition-colors placeholder:text-text-light"
+          disabled={isStreaming}
+          placeholder={isStreaming ? "Dr. Fatima's Assistant is responding..." : "Message in Roman Urdu or English..."}
+          className={`flex-1 bg-warm text-text-dark text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:border-primary transition-colors placeholder:text-text-light ${
+            isStreaming ? 'opacity-60 cursor-not-allowed bg-gray-100' : ''
+          }`}
         />
 
         {/* WhatsApp Style Voice Mic Button */}
@@ -474,11 +652,13 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           )}
         </button>
 
-        {/* Send Message Button */}
+        {/* Send Message Button (Disabled during active streaming) */}
         <button
           type="submit"
-          disabled={!input.trim()}
-          className="bg-primary hover:bg-primary-dark text-white p-2.5 rounded-xl disabled:opacity-40 transition-opacity flex items-center justify-center shadow-xs"
+          disabled={!input.trim() || isStreaming}
+          className={`bg-primary hover:bg-primary-dark text-white p-2.5 rounded-xl transition-all flex items-center justify-center shadow-xs ${
+            !input.trim() || isStreaming ? 'opacity-40 cursor-not-allowed' : 'hover:scale-105'
+          }`}
         >
           <Send className="w-4 h-4" />
         </button>

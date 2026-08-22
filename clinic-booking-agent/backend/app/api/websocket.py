@@ -9,11 +9,47 @@ from app.models.schemas import WSChatMessage
 logger = logging.getLogger("websocket_chat")
 router = APIRouter()
 
+def extract_tool_name(event) -> str:
+    """Helper to safely extract tool name from various agent event formats."""
+    # 1. Direct tool_name attribute
+    if hasattr(event, "tool_name") and event.tool_name:
+        return str(event.tool_name)
+    
+    # 2. Check item attribute (RunItemStreamEvent)
+    item = getattr(event, "item", None)
+    if item:
+        if hasattr(item, "tool_name") and item.tool_name:
+            return str(item.tool_name)
+        if hasattr(item, "_resolved_tool_name") and item._resolved_tool_name:
+            return str(item._resolved_tool_name)
+        if hasattr(item, "title") and item.title:
+            return str(item.title)
+        
+        raw_item = getattr(item, "raw_item", None)
+        if raw_item:
+            if hasattr(raw_item, "name") and raw_item.name:
+                return str(raw_item.name)
+            if hasattr(raw_item, "function") and hasattr(raw_item.function, "name"):
+                return str(raw_item.function.name)
+            if isinstance(raw_item, dict):
+                if "name" in raw_item:
+                    return str(raw_item["name"])
+                if "function" in raw_item and isinstance(raw_item["function"], dict):
+                    return str(raw_item["function"].get("name", ""))
+
+    # 3. Direct name attribute (if not generic event name)
+    name = getattr(event, "name", "")
+    if name and name not in ("tool_called", "tool_call", "tool_output", "run_item_stream_event", "message_output_created"):
+        return str(name)
+        
+    return ""
+
+
 @router.websocket("/ws/chat/{session_id}")
 async def websocket_chat_endpoint(websocket: WebSocket, session_id: str):
     """
-    Bi-directional WebSocket endpoint for streaming AI chatbot responses.
-    Uses SQLiteSession for persistent multi-turn conversational memory across user turns.
+    Bi-directional WebSocket endpoint for streaming AI chatbot responses with tool call & handoff visibility.
+    Uses SQLiteSession for persistent multi-turn conversational memory.
     """
     await websocket.accept()
     logger.info(f"WebSocket client connected with session ID: {session_id}")
@@ -23,6 +59,9 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str):
 
     # Create local clinic context
     context = ClinicContext(session_id=session_id)
+
+    # Per-connection streaming lock guard
+    is_streaming = False
 
     try:
         while True:
@@ -36,9 +75,22 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str):
             if not user_input:
                 continue
 
+            # Backend-side streaming guard: lock input during response generation
+            if is_streaming:
+                logger.warning(f"Session [{session_id}] received message while streaming was active. Sending busy signal.")
+                await websocket.send_json({
+                    "type": "busy",
+                    "message": "Please wait, still responding..."
+                })
+                continue
+
             logger.info(f"Session [{session_id}] Received User Input: {user_input}")
 
-            # Run agent with streaming
+            is_streaming = True
+            
+            # 1. Send immediate typing indicator before LLM tokens start generating
+            await websocket.send_json({"type": "typing"})
+
             try:
                 run_result = Runner.run_streamed(
                     triage_agent,
@@ -51,16 +103,78 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str):
                 current_agent_name = triage_agent.name
 
                 async for event in run_result.stream_events():
-                    if event.type == "text_delta":
-                        delta_text = getattr(event, "delta", "")
-                        full_text += delta_text
+                    event_type = getattr(event, "type", "")
+                    event_name = getattr(event, "name", "")
+                    item = getattr(event, "item", None)
+                    item_type = getattr(item, "type", "") if item else ""
+
+                    # --- A. Tool Call Started ---
+                    if (
+                        event_name == "tool_called" 
+                        or event_type in ("tool_call", "tool_called")
+                        or item_type == "tool_call_item"
+                    ):
+                        tool_name = extract_tool_name(event)
+                        logger.info(f"Session [{session_id}] Tool Call Started: {tool_name}")
                         await websocket.send_json({
-                            "type": "stream",
-                            "delta": delta_text
+                            "type": "tool_call",
+                            "tool_name": tool_name
                         })
-                    elif event.type == "agent_changed":
+
+                    # --- B. Tool Call Completed ---
+                    elif (
+                        event_name == "tool_output"
+                        or event_type in ("tool_result", "tool_done", "tool_output")
+                        or item_type == "tool_call_output_item"
+                    ):
+                        logger.info(f"Session [{session_id}] Tool Call Completed")
+                        await websocket.send_json({
+                            "type": "tool_done"
+                        })
+
+                    # --- C. Agent Handoff / Updated Event ---
+                    elif (
+                        event_type in ("agent_changed", "agent_updated_stream_event")
+                        or event_name in ("handoff_occured", "handoff_requested")
+                    ):
+                        new_name = None
                         if hasattr(event, "new_agent") and hasattr(event.new_agent, "name"):
-                            current_agent_name = event.new_agent.name
+                            new_name = event.new_agent.name
+                        elif item and hasattr(item, "raw_item"):
+                            raw = getattr(item, "raw_item", None)
+                            if hasattr(raw, "name"):
+                                new_name = str(raw.name)
+                        
+                        if new_name and new_name != current_agent_name:
+                            current_agent_name = new_name
+                            logger.info(f"Session [{session_id}] Agent Handoff -> {new_name}")
+                            await websocket.send_json({
+                                "type": "agent_handoff",
+                                "agent": new_name
+                            })
+
+                    # --- D. Streaming Text Delta ---
+                    elif event_type == "text_delta":
+                        delta_text = getattr(event, "delta", "")
+                        if delta_text:
+                            full_text += delta_text
+                            await websocket.send_json({
+                                "type": "stream",
+                                "delta": delta_text
+                            })
+
+                    # --- E. Raw Response Event Chunks ---
+                    elif event_type == "raw_response_event":
+                        data = getattr(event, "data", None)
+                        if data and hasattr(data, "choices") and data.choices:
+                            delta = getattr(data.choices[0], "delta", None)
+                            if delta and hasattr(delta, "content") and delta.content:
+                                content_delta = delta.content
+                                full_text += content_delta
+                                await websocket.send_json({
+                                    "type": "stream",
+                                    "delta": content_delta
+                                })
 
                 # Format final response output
                 final_output_str = full_text if full_text else str(getattr(run_result, 'final_output', ''))
@@ -81,6 +195,8 @@ async def websocket_chat_endpoint(websocket: WebSocket, session_id: str):
                     "type": "error",
                     "error": f"An error occurred: {str(e)}"
                 })
+            finally:
+                is_streaming = False
 
     except WebSocketDisconnect:
         logger.info(f"WebSocket client disconnected for session: {session_id}")

@@ -91,7 +91,9 @@ export const Testimonials: React.FC = () => {
                   <div>
                     <p className="font-extrabold text-text-dark text-sm flex items-center gap-1.5">
                       {rev.author}
-                      <CheckCircle2 className="w-4 h-4 text-accent inline shrink-0" title="Verified Consultation" />
+                      <span title="Verified Consultation">
+                        <CheckCircle2 className="w-4 h-4 text-accent inline shrink-0" />
+                      </span>
                     </p>
                     <p className="text-xs text-text-light">{rev.location}</p>
                   </div>
