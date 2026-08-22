@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { X, FileText, Calendar, User, Phone, CheckCircle, RefreshCw, MessageSquare, Clock } from 'lucide-react';
+import { X, FileText, Calendar, User, Phone, CheckCircle, RefreshCw, MessageSquare, Clock, History, Filter } from 'lucide-react';
 import { API_URL, ADMIN_API_KEY } from '@/lib/config';
 
 interface AppointmentsDrawerProps {
@@ -23,6 +23,18 @@ interface Appointment {
 export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, onClose }) => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showPast, setShowPast] = useState(false);
+
+  // Format 24-hour time "14:00" to 12-hour "2:00 PM"
+  const formatTo12Hour = (time: string) => {
+    if (!time) return '';
+    const [h, m] = time.split(':').map(Number);
+    if (isNaN(h)) return time;
+    const period = h >= 12 ? 'PM' : 'AM';
+    const hour = h % 12 || 12;
+    const mins = isNaN(m) ? '00' : m.toString().padStart(2, '0');
+    return `${hour}:${mins} ${period}`;
+  };
 
   const fetchAppointments = async () => {
     setLoading(true);
@@ -50,6 +62,13 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+  // Filter today & upcoming vs past appointments
+  const today = new Date().toISOString().split('T')[0];
+  const filteredAppointments = appointments.filter((apt) => {
+    if (showPast) return true;
+    return apt.Appointment_Date >= today;
+  });
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end">
@@ -86,14 +105,36 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
           </div>
         </div>
 
+        {/* Filter Bar: Today/Upcoming vs Past Appointments */}
+        <div className="bg-white px-6 py-3 border-b border-border flex items-center justify-between gap-2">
+          <div className="text-xs text-text-mid font-medium flex items-center gap-1.5">
+            <Filter className="w-3.5 h-3.5 text-primary" />
+            <span>Showing:</span>
+            <span className="font-bold text-text-dark">
+              {showPast ? 'All Records (Including Past)' : 'Today & Upcoming'}
+            </span>
+            <span className="text-xs font-bold text-primary bg-primary-light px-2 py-0.5 rounded-full ml-1">
+              {filteredAppointments.length}
+            </span>
+          </div>
+
+          <button
+            onClick={() => setShowPast(!showPast)}
+            className="text-xs font-bold px-3.5 py-1.5 rounded-full border border-border bg-warm hover:bg-primary-light hover:text-primary hover:border-primary transition-all flex items-center gap-1.5 shadow-xs"
+          >
+            <History className="w-3.5 h-3.5" />
+            <span>{showPast ? 'Hide Past' : 'Show Past'}</span>
+          </button>
+        </div>
+
         {/* Content List */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-[#F8FAFC]">
           {loading && appointments.length === 0 ? (
             <div className="text-center py-16 text-text-light text-sm font-medium">
               Loading real-time appointment records from Google Sheets...
             </div>
-          ) : appointments.length > 0 ? (
-            appointments.map((apt, idx) => (
+          ) : filteredAppointments.length > 0 ? (
+            filteredAppointments.map((apt, idx) => (
               <div key={idx} className="bg-white p-5 rounded-2xl border border-border space-y-3.5 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono font-bold text-primary px-3 py-1 rounded-lg bg-primary-light border border-blue-200">
@@ -119,7 +160,7 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
                   </div>
                   <div>
                     <span className="text-text-light flex items-center gap-1 font-medium"><Clock className="w-3.5 h-3.5 text-amber-500" /> Time:</span>
-                    <p className="font-bold text-text-dark text-sm mt-0.5">{apt.Start_Time}</p>
+                    <p className="font-bold text-text-dark text-sm mt-0.5">{formatTo12Hour(apt.Start_Time)}</p>
                   </div>
                 </div>
 
@@ -129,6 +170,19 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
                 </div>
               </div>
             ))
+          ) : appointments.length > 0 ? (
+            <div className="text-center py-16 bg-white rounded-2xl border border-border p-8 shadow-xs">
+              <Calendar className="w-10 h-10 text-primary mx-auto mb-3" />
+              <p className="text-base font-bold text-text-dark">No Upcoming Appointments</p>
+              <p className="text-xs text-text-mid mt-1 mb-4">You have appointments in past dates.</p>
+              <button
+                onClick={() => setShowPast(true)}
+                className="px-4 py-2 bg-primary-light hover:bg-primary text-primary hover:text-white rounded-full text-xs font-bold border border-blue-200 transition-colors inline-flex items-center gap-1.5"
+              >
+                <History className="w-3.5 h-3.5" />
+                <span>Show Past Appointments</span>
+              </button>
+            </div>
           ) : (
             <div className="text-center py-16 bg-white rounded-2xl border border-border p-8 shadow-xs">
               <MessageSquare className="w-10 h-10 text-primary mx-auto mb-3" />
