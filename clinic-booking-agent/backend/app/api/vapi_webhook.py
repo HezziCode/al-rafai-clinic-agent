@@ -52,6 +52,25 @@ async def vapi_webhook_handler(request: Request):
                 patient_phone = args.get("patient_phone", "")
                 visit_reason = args.get("visit_reason", "")
                 appointment_date = args.get("appointment_date", "")
+
+                # Auto-correct wrong year (e.g. 2024 instead of 2026)
+                from datetime import datetime
+                current_year = datetime.now().year
+                today_str = datetime.now().strftime("%Y-%m-%d")
+                if appointment_date:
+                    parts = appointment_date.split("-")
+                    if len(parts) == 3:
+                        try:
+                            booked_year = int(parts[0])
+                            # If year is in the past, replace with current year
+                            if booked_year < current_year:
+                                appointment_date = f"{current_year}-{parts[1]}-{parts[2]}"
+                            # If corrected date is still in the past, reject it
+                            if appointment_date < today_str:
+                                appointment_date = f"{current_year + 1}-{parts[1]}-{parts[2]}"
+                        except (ValueError, IndexError):
+                            pass
+
                 start_time = args.get("start_time", "")
 
                 success, result_id = sheets_service.book_appointment(

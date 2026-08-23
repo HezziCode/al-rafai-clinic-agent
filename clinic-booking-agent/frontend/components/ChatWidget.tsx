@@ -616,12 +616,12 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           }`}
         />
 
-        {/* Voice Button — Mic when idle, Square when active (Blue Theme) */}
+        {/* Voice Button — Mic idle, Red Square when active */}
         <div className="relative flex-shrink-0 flex items-center justify-center">
           {isVoiceActive && (
             <>
-              <span className="absolute w-full h-full rounded-xl bg-primary/40 animate-ping" />
-              <span className="absolute w-full h-full rounded-xl bg-primary/20 animate-ping [animation-delay:300ms]" />
+              <span className="absolute w-full h-full rounded-xl bg-red-400 opacity-30 animate-ping" />
+              <span className="absolute w-full h-full rounded-xl bg-red-300 opacity-20 animate-ping [animation-delay:300ms]" />
             </>
           )}
           <button
@@ -639,7 +639,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
               !VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID
                 ? "bg-warm border-border text-text-light cursor-not-allowed opacity-50"
                 : isVoiceActive
-                ? "bg-primary hover:bg-primary-dark border-primary text-white shadow-lg shadow-primary/30 scale-105"
+                ? "bg-red-500 hover:bg-red-600 border-red-500 text-white shadow-lg scale-105"
                 : "bg-warm border-border text-primary hover:bg-primary-light hover:text-primary-dark"
             }`}
           >

@@ -61,6 +61,24 @@ def book_appointment(
         appointment_date: Appointment date in YYYY-MM-DD format.
         start_time: Start time in HH:MM (24-hour) format, e.g., '14:00' or '15:30'.
     """
+    # Auto-correct wrong year (e.g. 2024 instead of 2026)
+    from datetime import datetime
+    current_year = datetime.now().year
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    if appointment_date:
+        parts = appointment_date.split("-")
+        if len(parts) == 3:
+            try:
+                booked_year = int(parts[0])
+                # If year is in the past, replace with current year
+                if booked_year < current_year:
+                    appointment_date = f"{current_year}-{parts[1]}-{parts[2]}"
+                # If corrected date is still in the past, reject it
+                if appointment_date < today_str:
+                    appointment_date = f"{current_year + 1}-{parts[1]}-{parts[2]}"
+            except (ValueError, IndexError):
+                pass
+
     success, result_msg_or_id = sheets_service.book_appointment(
         patient_name=patient_name,
         patient_phone=patient_phone,

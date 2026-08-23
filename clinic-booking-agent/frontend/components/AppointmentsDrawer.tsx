@@ -25,15 +25,12 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
   const [loading, setLoading] = useState(false);
   const [showPast, setShowPast] = useState(false);
 
-  // Format 24-hour time "14:00" to 12-hour "2:00 PM"
-  const formatTo12Hour = (time: string) => {
-    if (!time) return '';
+  const formatTo12Hour = (time: string): string => {
+    if (!time) return time;
     const [h, m] = time.split(':').map(Number);
-    if (isNaN(h)) return time;
     const period = h >= 12 ? 'PM' : 'AM';
     const hour = h % 12 || 12;
-    const mins = isNaN(m) ? '00' : m.toString().padStart(2, '0');
-    return `${hour}:${mins} ${period}`;
+    return `${hour}:${m.toString().padStart(2, '0')} ${period}`;
   };
 
   const fetchAppointments = async () => {

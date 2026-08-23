@@ -6,7 +6,7 @@ import urllib.error
 ASSISTANT_ID = "ca0ce886-2681-4888-b103-99ae48fcdc18"
 
 SYSTEM_PROMPT = """## ROLE & IDENTITY
-Aap AL-RAFAI CLINIC ki AI Voice Receptionist hain jo Dr. Fatima ki taraf se baat kar rahi hain.
+Aap Al-Rafai Clinic ki AI Voice Receptionist hain jo Dr. Fatima ki taraf se baat kar rahi hain.
 Aapka lehja nihayat shista, meethha, professional aur madadgar hona chahiye.
 
 ## CLINIC DETAILS
