@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Star, CheckCircle2, Quote, Sparkles } from 'lucide-react';
+import { Star, CheckCircle2, Quote, Sparkles, ShieldCheck } from 'lucide-react';
 
 export const Testimonials: React.FC = () => {
   const reviews = [
@@ -12,7 +12,7 @@ export const Testimonials: React.FC = () => {
       author: "Ahmed Khan",
       location: "Lahore, Pakistan",
       initials: "AK",
-      badgeColor: "bg-blue-50 text-primary border-blue-200"
+      badgeColor: "bg-primary-light text-primary border-blue-200"
     },
     {
       stars: 5,
@@ -21,7 +21,7 @@ export const Testimonials: React.FC = () => {
       author: "Sana Malik",
       location: "Karachi, Pakistan",
       initials: "SM",
-      badgeColor: "bg-emerald-50 text-accent border-green-200"
+      badgeColor: "bg-blue-50 text-primary border-blue-200"
     },
     {
       stars: 5,
@@ -30,25 +30,23 @@ export const Testimonials: React.FC = () => {
       author: "Usman Rasheed",
       location: "Islamabad, Pakistan",
       initials: "UR",
-      badgeColor: "bg-purple-50 text-purple-700 border-purple-200"
+      badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200"
     }
   ];
 
   return (
-    <section id="testimonials" className="bg-[#F8FAFC] py-24 px-4 lg:px-8 border-y border-border relative overflow-hidden">
+    <section id="testimonials" className="bg-[#F8FAFC] py-20 px-4 lg:px-8 border-y border-border relative overflow-hidden">
       
       {/* Background Decorative Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(#E2E8F0_1px,transparent_1px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
-
       <div className="max-w-7xl mx-auto relative z-10">
         
-        {/* Header */}
+        {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-border shadow-xs text-xs sm:text-sm font-bold text-primary mb-3">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-blue-200 shadow-xs text-xs sm:text-sm font-bold text-primary mb-3">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
-            VERIFIED PATIENT EXPERIENCES
+            <span>VERIFIED PATIENT REVIEWS</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text-dark tracking-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text-dark tracking-tight font-heading">
             What Patients Say About Dr. Fatima
           </h2>
           <p className="text-base sm:text-lg text-text-mid mt-3 font-normal leading-relaxed">
@@ -57,18 +55,18 @@ export const Testimonials: React.FC = () => {
         </div>
 
         {/* 3 Testimonial Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {reviews.map((rev, idx) => (
             <div 
               key={idx}
-              className="bg-white rounded-3xl p-8 border border-border shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between relative group"
+              className="bg-white rounded-3xl p-7 sm:p-8 border border-border shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between relative group"
             >
               <div>
-                {/* Top Row: Stars + Treatment Tag */}
-                <div className="flex items-center justify-between gap-2 mb-6">
-                  <div className="flex items-center gap-1 text-amber-400">
+                {/* Top Row: 5 Gold Stars + Treatment Badge */}
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-5">
+                  <div className="flex items-center gap-1">
                     {[...Array(rev.stars)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-amber-400" />
+                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
                   <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${rev.badgeColor}`}>
@@ -76,46 +74,53 @@ export const Testimonials: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Quote Text */}
-                <p className="text-text-mid text-sm sm:text-[15px] leading-relaxed mb-8 font-normal">
+                {/* Patient Quote */}
+                <p className="text-text-mid text-sm sm:text-[15px] leading-relaxed mb-6 font-normal">
                   "{rev.quote}"
                 </p>
               </div>
 
-              {/* Bottom Patient Row */}
-              <div className="pt-6 border-t border-border/80 flex items-center justify-between">
+              {/* Patient Info Footer */}
+              <div className="pt-5 border-t border-border flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-primary-light border border-blue-200 flex items-center justify-center text-primary font-black text-sm shadow-xs">
+                  <div className="w-10 h-10 rounded-full bg-primary-light border border-blue-200 flex items-center justify-center text-primary font-extrabold text-sm shadow-xs shrink-0">
                     {rev.initials}
                   </div>
                   <div>
                     <p className="font-extrabold text-text-dark text-sm flex items-center gap-1.5">
                       {rev.author}
-                      <span title="Verified Consultation">
-                        <CheckCircle2 className="w-4 h-4 text-accent inline shrink-0" />
-                      </span>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
                     </p>
                     <p className="text-xs text-text-light">{rev.location}</p>
                   </div>
                 </div>
 
-                <Quote className="w-7 h-7 text-primary/15 group-hover:text-primary/30 transition-colors shrink-0" />
+                <Quote className="w-6 h-6 text-primary/20 group-hover:text-primary/40 transition-colors shrink-0" />
               </div>
             </div>
           ))}
         </div>
 
-        {/* Aggregate Trust Banner */}
-        <div className="mt-14 max-w-xl mx-auto bg-white rounded-2xl p-4 sm:p-5 border border-border shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <div className="flex items-center gap-3">
-            <div className="text-2xl font-black text-text-dark">4.9 ★</div>
-            <div className="text-xs text-text-mid">
-              <p className="font-bold text-text-dark">Exceptional Medical Rating</p>
-              <p className="text-text-light">Based on 350+ in-person consultations</p>
+        {/* Aggregate Medical Trust Banner */}
+        <div className="mt-12 max-w-2xl mx-auto bg-white rounded-2xl p-5 border border-blue-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-xl bg-primary-light flex items-center justify-center text-primary font-black text-lg border border-blue-200 shrink-0">
+              4.9
+            </div>
+            <div>
+              <div className="flex items-center gap-1 text-amber-400 mb-0.5 justify-center sm:justify-start">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                ))}
+                <span className="text-xs font-bold text-text-dark ml-1">Overall Rating</span>
+              </div>
+              <p className="text-xs text-text-mid font-medium">Based on 350+ verified patient consultations</p>
             </div>
           </div>
-          <div className="inline-flex items-center gap-1 text-xs font-bold text-accent bg-accent-light px-3.5 py-1.5 rounded-full border border-green-200">
-            <CheckCircle2 className="w-3.5 h-3.5" /> 100% Patient Satisfaction
+
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-primary bg-primary-light px-4 py-2 rounded-full border border-blue-200 shrink-0">
+            <ShieldCheck className="w-4 h-4 text-primary" />
+            <span>100% Verified Reviews</span>
           </div>
         </div>
 
