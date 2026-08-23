@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="AL-RAFAI CLINIC AI Booking Backend",
     version="1.0.0",
-    description="FastAPI + OpenAI Agents SDK appointment booking backend with Google Sheets & Twilio WhatsApp notifications.",
+    description="FastAPI + OpenAI Agents SDK appointment booking backend with Google Sheets integration.",
     lifespan=lifespan
 )
 

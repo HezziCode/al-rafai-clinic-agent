@@ -52,7 +52,7 @@ def book_appointment(
     start_time: str
 ) -> str:
     """
-    Saves and confirms an appointment in the clinic Google Sheet and triggers WhatsApp notification to the doctor.
+    Saves and confirms an appointment in the clinic Google Sheet.
 
     Args:
         patient_name: Patient's full name.
@@ -101,8 +101,7 @@ def book_appointment(
             f"Doctor: {settings.CLINIC_DOCTOR_NAME}\n"
             f"Date: {appointment_date}\n"
             f"Time: {start_time}\n"
-            f"Reason: {visit_reason}\n"
-            f"Doctor has been notified via WhatsApp."
+            f"Reason: {visit_reason}"
         )
     else:
         return (

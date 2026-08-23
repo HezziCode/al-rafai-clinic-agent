@@ -10,7 +10,6 @@ from google.oauth2.service_account import Credentials
 from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type
 
 from app.core.config import settings
-from app.core.whatsapp import send_whatsapp_notification, send_patient_whatsapp_notification
 
 logger = logging.getLogger("google_sheets_service")
 
@@ -230,18 +229,6 @@ class GoogleSheetsService:
             else:
                 logger.info(f"[LOCAL MOCK RECORD]: {row_data}")
 
-            # Trigger WhatsApp notification to Doctor & Patient
-            booking_dict = {
-                "booking_id": booking_id,
-                "patient_name": patient_name,
-                "patient_phone": patient_phone,
-                "visit_reason": visit_reason,
-                "appointment_date": appointment_date,
-                "start_time": start_time,
-                "end_time": end_time
-            }
-            send_whatsapp_notification(booking_dict)
-
             return True, booking_id
 
     def cancel_appointment(self, booking_id: str) -> Tuple[bool, str]:
@@ -276,13 +263,6 @@ class GoogleSheetsService:
                     # Status is column 9
                     self.appointments_sheet.update_cell(row_idx, 9, "CANCELLED")
                     logger.info(f"Appointment {clean_id} updated to CANCELLED in row {row_idx}.")
-
-                    # Notify patient
-                    send_patient_whatsapp_notification({
-                        "booking_id": clean_id,
-                        "patient_name": patient_name,
-                        "patient_phone": patient_phone
-                    }, action="CANCELLED")
 
                     return True, f"Appointment {clean_id} has been successfully cancelled."
                 except Exception as e:
@@ -339,15 +319,6 @@ class GoogleSheetsService:
                     self.appointments_sheet.update_cell(row_idx, 7, end_time)
                     self.appointments_sheet.update_cell(row_idx, 9, "RESCHEDULED")
                     logger.info(f"Appointment {clean_id} rescheduled to {new_date} {new_time} in row {row_idx}.")
-
-                    # Send patient WhatsApp notification
-                    send_patient_whatsapp_notification({
-                        "booking_id": clean_id,
-                        "patient_name": patient_name,
-                        "patient_phone": patient_phone,
-                        "appointment_date": new_date,
-                        "start_time": new_time
-                    }, action="RESCHEDULED")
 
                     return True, f"Appointment {clean_id} successfully rescheduled to {new_date} at {new_time}."
                 except Exception as e:

@@ -16,11 +16,6 @@ class Settings(BaseSettings):
     FRONTEND_ORIGIN: str = "http://localhost:3000"
     ADMIN_API_KEY: str = "b6423328-e79e-4772-9342-bc856e45768e"
 
-    TWILIO_ACCOUNT_SID: str = ""
-    TWILIO_AUTH_TOKEN: str = ""
-    TWILIO_WHATSAPP_NUMBER: str = "whatsapp:+14155238886"
-    DOCTOR_WHATSAPP_NUMBER: str = "whatsapp:+15551234567"
-
     CLINIC_NAME: str = "AL-RAFAI CLINIC"
     CLINIC_DOCTOR_NAME: str = "Dr. Fatima"
     CLINIC_PHONE: str = "+1 (555) 234-5678"
