@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, X, Send, Phone, Mic, Sparkles, CheckCircle2, AlertCircle, Calendar, MapPin, Clock } from 'lucide-react';
+import { Bot, X, Send, Phone, Mic, Square, Sparkles, CheckCircle2, AlertCircle, Calendar, MapPin, Clock } from 'lucide-react';
 import Vapi from '@vapi-ai/web';
 import { WS_URL, VAPI_PUBLIC_KEY, VAPI_ASSISTANT_ID } from '@/lib/config';
 
@@ -616,32 +616,40 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           }`}
         />
 
-        {/* Voice Mic Button (Matching Blue Palette) */}
-        <button
-          type="button"
-          onClick={toggleVoiceCall}
-          disabled={!VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID}
-          title={
-            !VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID
-              ? "Voice Assistant unconfigured in .env"
-              : isVoiceActive
-              ? "End Voice Call"
-              : "Start Voice Call"
-          }
-          className={`p-2.5 rounded-xl border transition-all flex items-center justify-center ${
-            !VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID
-              ? "bg-warm border-border text-text-light cursor-not-allowed opacity-50"
-              : isVoiceActive 
-              ? "bg-primary text-white border-primary shadow-md" 
-              : "bg-warm border-border text-primary hover:text-primary-dark hover:bg-primary-light"
-          }`}
-        >
-          {isVoiceActive ? (
-            <Mic className="w-4 h-4 text-white animate-pulse" />
-          ) : (
-            <Mic className="w-4 h-4 text-primary" />
+        {/* Voice Button — Mic when idle, Red Square when active */}
+        <div className="relative flex-shrink-0 flex items-center justify-center">
+          {isVoiceActive && (
+            <>
+              <span className="absolute w-full h-full rounded-xl bg-red-400 opacity-30 animate-ping" />
+              <span className="absolute w-full h-full rounded-xl bg-red-300 opacity-20 animate-ping [animation-delay:300ms]" />
+            </>
           )}
-        </button>
+          <button
+            type="button"
+            onClick={toggleVoiceCall}
+            disabled={!VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID}
+            title={
+              !VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID
+                ? "Voice Assistant unconfigured in .env"
+                : isVoiceActive
+                ? "Tap to end call"
+                : "Start Voice Call"
+            }
+            className={`relative z-10 p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-center ${
+              !VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID
+                ? "bg-warm border-border text-text-light cursor-not-allowed opacity-50"
+                : isVoiceActive
+                ? "bg-red-500 hover:bg-red-600 border-red-500 text-white shadow-lg scale-105"
+                : "bg-warm border-border text-primary hover:bg-primary-light hover:text-primary-dark"
+            }`}
+          >
+            {isVoiceActive ? (
+              <Square className="w-4 h-4 text-white fill-white" />
+            ) : (
+              <Mic className="w-4 h-4 text-primary" />
+            )}
+          </button>
+        </div>
 
         {/* Send Message Button */}
         <button
