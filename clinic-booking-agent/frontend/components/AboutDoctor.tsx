@@ -16,7 +16,7 @@ export const AboutDoctor: React.FC<AboutDoctorProps> = ({ onOpenChat }) => {
         <div className="lg:col-span-5 relative flex justify-center">
           <div className="w-full max-w-md h-[480px] rounded-3xl overflow-hidden shadow-xl border border-border relative group">
             <img 
-              src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800&auto=format&fit=crop&q=80" 
+              src="/doctor-fatima.jpg" 
               alt="Dr. Fatima - Founder and PMDC Registered Consultant at AL-RAFAI CLINIC" 
               width={800}
               height={800}

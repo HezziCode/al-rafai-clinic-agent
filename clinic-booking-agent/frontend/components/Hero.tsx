@@ -83,7 +83,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenChat, onScrollToSlots }) => {
             
             {/* Professional Doctor Photo */}
             <img 
-              src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800&auto=format&fit=crop&q=80" 
+              src="/doctor-fatima.jpg" 
               alt="Dr. Fatima MBBS - General Physician & Consultant at AL-RAFAI CLINIC North Karachi" 
               width={800}
               height={800}

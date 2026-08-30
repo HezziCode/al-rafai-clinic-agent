@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Navbar } from '@/components/Navbar';
 import { Hero } from '@/components/Hero';
 import { StatsBar } from '@/components/StatsBar';
@@ -10,9 +11,11 @@ import { SlotChecker } from '@/components/SlotChecker';
 import { AboutDoctor } from '@/components/AboutDoctor';
 import { Testimonials } from '@/components/Testimonials';
 import { Footer } from '@/components/Footer';
-import { ChatWidget } from '@/components/ChatWidget';
-import { AppointmentsDrawer } from '@/components/AppointmentsDrawer';
-import { DoctorPinModal } from '@/components/DoctorPinModal';
+
+// Code-split heavy interactive overlays so initial page loads instantly with 0 blocking time
+const ChatWidget = dynamic(() => import('@/components/ChatWidget').then(mod => mod.ChatWidget), { ssr: false });
+const AppointmentsDrawer = dynamic(() => import('@/components/AppointmentsDrawer').then(mod => mod.AppointmentsDrawer), { ssr: false });
+const DoctorPinModal = dynamic(() => import('@/components/DoctorPinModal').then(mod => mod.DoctorPinModal), { ssr: false });
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);
