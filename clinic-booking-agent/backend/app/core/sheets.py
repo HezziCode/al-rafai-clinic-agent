@@ -52,7 +52,15 @@ class GoogleSheetsService:
                     creds_path = os.path.join(base_dir, creds_path)
 
                 if not os.path.exists(creds_path):
-                    logger.warning(f"Google service account file not found at: {creds_path}")
+                    self.initialized = False
+                    logger.error("=" * 60)
+                    logger.error("GOOGLE SHEETS INITIALIZATION FAILED")
+                    logger.error(f"Error: Google service account file not found at: {creds_path}")
+                    logger.error(f"Service account path: {settings.GOOGLE_SERVICE_ACCOUNT_PATH}")
+                    logger.error(f"Sheet ID: {settings.GOOGLE_SHEET_ID}")
+                    logger.error("Fix: ensure service_account.json exists and")
+                    logger.error("the service account email has Editor access to the sheet")
+                    logger.error("=" * 60)
                     return
 
                 creds = Credentials.from_service_account_file(creds_path, scopes=SCOPES)
@@ -93,8 +101,15 @@ class GoogleSheetsService:
             self.initialized = True
             logger.info(f"Google Sheets Service successfully initialized for Sheet ID: {settings.GOOGLE_SHEET_ID}")
         except Exception as e:
-            logger.error(f"Failed to initialize Google Sheets service: {e}")
             self.initialized = False
+            logger.error("=" * 60)
+            logger.error("GOOGLE SHEETS INITIALIZATION FAILED")
+            logger.error(f"Error: {str(e)}")
+            logger.error(f"Service account path: {settings.GOOGLE_SERVICE_ACCOUNT_PATH}")
+            logger.error(f"Sheet ID: {settings.GOOGLE_SHEET_ID}")
+            logger.error("Fix: ensure service_account.json exists and")
+            logger.error("the service account email has Editor access to the sheet")
+            logger.error("=" * 60)
 
     def _get_or_create_worksheet(self, title: str, headers: List[str], default_rows: List[List[str]] = None) -> gspread.Worksheet:
         try:
@@ -199,9 +214,14 @@ class GoogleSheetsService:
         start_time: str
     ) -> Tuple[bool, str]:
         """
-        Thread-safe double-booking check and sheet record creation with local backup.
+        Thread-safe double-booking check and sheet record creation.
         """
         with sheet_lock:
+            if not self.initialized or not self.appointments_sheet:
+                logger.error("BOOKING FAILED: Google Sheets not connected.")
+                logger.error("Appointment was NOT saved. Check Sheets initialization.")
+                return False, "Booking system is currently unavailable. Please try again later or call the clinic directly."
+
             # 1. Double booking check
             available_slots = self.get_available_slots(appointment_date)
             if start_time not in available_slots:
@@ -245,20 +265,16 @@ class GoogleSheetsService:
                 "Status": "BOOKED",
                 "Created_At": created_at
             }
-            # Always save to local backup
+            # Cache locally as well
             self._local_records.append(record_dict)
 
-            # Write to Sheet if initialized
-            if self.initialized and self.appointments_sheet:
-                try:
-                    self.appointments_sheet.append_row(row_data, value_input_option="USER_ENTERED")
-                    logger.info(f"Appointment {booking_id} successfully saved to Google Sheet.")
-                except Exception as e:
-                    logger.error(f"Failed to append row to Google Sheet: {e}")
-            else:
-                logger.info(f"[LOCAL RECORD SAVED]: {record_dict}")
-
-            return True, booking_id
+            try:
+                self.appointments_sheet.append_row(row_data, value_input_option="USER_ENTERED")
+                logger.info(f"Appointment {booking_id} successfully saved to Google Sheet.")
+                return True, booking_id
+            except Exception as e:
+                logger.error(f"Failed to append row to Google Sheet: {e}")
+                return False, "Failed to save appointment to Google Sheet. Please try again or call the clinic."
 
     def cancel_appointment(self, booking_id: str) -> Tuple[bool, str]:
         """
@@ -269,37 +285,37 @@ class GoogleSheetsService:
             if not booking_id:
                 return False, "Booking ID is required."
             
+            if not self.initialized or not self.appointments_sheet:
+                logger.error("CANCELLATION FAILED: Google Sheets not connected.")
+                return False, "System unavailable. Please call the clinic directly."
+
             clean_id = booking_id.strip().upper()
 
-            if self.initialized and self.appointments_sheet:
-                try:
-                    records = self.appointments_sheet.get_all_records()
-                    row_idx = None
-                    patient_name = "Patient"
-                    patient_phone = ""
+            try:
+                records = self.appointments_sheet.get_all_records()
+                row_idx = None
+                patient_name = "Patient"
+                patient_phone = ""
 
-                    for idx, r in enumerate(records, start=2):
-                        r_id = str(r.get("Booking_ID", "")).strip().upper()
-                        if r_id == clean_id:
-                            row_idx = idx
-                            patient_name = str(r.get("Patient_Name", "Patient"))
-                            patient_phone = str(r.get("Patient_Phone", ""))
-                            break
+                for idx, r in enumerate(records, start=2):
+                    r_id = str(r.get("Booking_ID", "")).strip().upper()
+                    if r_id == clean_id:
+                        row_idx = idx
+                        patient_name = str(r.get("Patient_Name", "Patient"))
+                        patient_phone = str(r.get("Patient_Phone", ""))
+                        break
 
-                    if not row_idx:
-                        return False, f"Appointment {booking_id} not found."
+                if not row_idx:
+                    return False, f"Appointment {booking_id} not found."
 
-                    # Status is column 9
-                    self.appointments_sheet.update_cell(row_idx, 9, "CANCELLED")
-                    logger.info(f"Appointment {clean_id} updated to CANCELLED in row {row_idx}.")
+                # Status is column 9
+                self.appointments_sheet.update_cell(row_idx, 9, "CANCELLED")
+                logger.info(f"Appointment {clean_id} updated to CANCELLED in row {row_idx}.")
 
-                    return True, f"Appointment {clean_id} has been successfully cancelled."
-                except Exception as e:
-                    logger.error(f"Error cancelling appointment in Google Sheet: {e}")
-                    return False, f"Failed to update appointment: {str(e)}"
-            else:
-                logger.info(f"[LOCAL MOCK CANCEL]: {clean_id}")
-                return True, f"Appointment {clean_id} has been successfully cancelled (Mock mode)."
+                return True, f"Appointment {clean_id} has been successfully cancelled."
+            except Exception as e:
+                logger.error(f"Error cancelling appointment in Google Sheet: {e}")
+                return False, f"Failed to update appointment: {str(e)}"
 
     def reschedule_appointment(self, booking_id: str, new_date: str, new_time: str) -> Tuple[bool, str]:
         """
@@ -309,6 +325,10 @@ class GoogleSheetsService:
             if not booking_id:
                 return False, "Booking ID is required."
             
+            if not self.initialized or not self.appointments_sheet:
+                logger.error("RESCHEDULE FAILED: Google Sheets not connected.")
+                return False, "System unavailable. Please call the clinic directly."
+
             clean_id = booking_id.strip().upper()
 
             # Check if new slot is available
@@ -324,38 +344,34 @@ class GoogleSheetsService:
             except ValueError:
                 end_time = new_time
 
-            if self.initialized and self.appointments_sheet:
-                try:
-                    records = self.appointments_sheet.get_all_records()
-                    row_idx = None
-                    patient_name = "Patient"
-                    patient_phone = ""
+            try:
+                records = self.appointments_sheet.get_all_records()
+                row_idx = None
+                patient_name = "Patient"
+                patient_phone = ""
 
-                    for idx, r in enumerate(records, start=2):
-                        r_id = str(r.get("Booking_ID", "")).strip().upper()
-                        if r_id == clean_id:
-                            row_idx = idx
-                            patient_name = str(r.get("Patient_Name", "Patient"))
-                            patient_phone = str(r.get("Patient_Phone", ""))
-                            break
+                for idx, r in enumerate(records, start=2):
+                    r_id = str(r.get("Booking_ID", "")).strip().upper()
+                    if r_id == clean_id:
+                        row_idx = idx
+                        patient_name = str(r.get("Patient_Name", "Patient"))
+                        patient_phone = str(r.get("Patient_Phone", ""))
+                        break
 
-                    if not row_idx:
-                        return False, f"Appointment {booking_id} not found."
+                if not row_idx:
+                    return False, f"Appointment {booking_id} not found."
 
-                    # Col 5: Appointment_Date, Col 6: Start_Time, Col 7: End_Time, Col 9: Status
-                    self.appointments_sheet.update_cell(row_idx, 5, new_date)
-                    self.appointments_sheet.update_cell(row_idx, 6, new_time)
-                    self.appointments_sheet.update_cell(row_idx, 7, end_time)
-                    self.appointments_sheet.update_cell(row_idx, 9, "RESCHEDULED")
-                    logger.info(f"Appointment {clean_id} rescheduled to {new_date} {new_time} in row {row_idx}.")
+                # Col 5: Appointment_Date, Col 6: Start_Time, Col 7: End_Time, Col 9: Status
+                self.appointments_sheet.update_cell(row_idx, 5, new_date)
+                self.appointments_sheet.update_cell(row_idx, 6, new_time)
+                self.appointments_sheet.update_cell(row_idx, 7, end_time)
+                self.appointments_sheet.update_cell(row_idx, 9, "RESCHEDULED")
+                logger.info(f"Appointment {clean_id} rescheduled to {new_date} {new_time} in row {row_idx}.")
 
-                    return True, f"Appointment {clean_id} successfully rescheduled to {new_date} at {new_time}."
-                except Exception as e:
-                    logger.error(f"Error rescheduling appointment in Google Sheet: {e}")
-                    return False, f"Failed to update appointment: {str(e)}"
-            else:
-                logger.info(f"[LOCAL MOCK RESCHEDULE]: {clean_id} to {new_date} {new_time}")
-                return True, f"Appointment {clean_id} successfully rescheduled to {new_date} at {new_time} (Mock mode)."
+                return True, f"Appointment {clean_id} successfully rescheduled to {new_date} at {new_time}."
+            except Exception as e:
+                logger.error(f"Error rescheduling appointment in Google Sheet: {e}")
+                return False, f"Failed to update appointment: {str(e)}"
 
 # Global instance
 sheets_service = GoogleSheetsService()

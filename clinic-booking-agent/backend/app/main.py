@@ -67,7 +67,8 @@ async def root():
         "clinic": settings.CLINIC_NAME,
         "doctor": settings.CLINIC_DOCTOR_NAME,
         "sheet_id": settings.GOOGLE_SHEET_ID,
-        "sheets_connected": sheets_service.initialized
+        "sheets_connected": sheets_service.initialized,
+        "sheets_status": "connected" if sheets_service.initialized else "DISCONNECTED — bookings will fail"
     }
 
 if __name__ == "__main__":

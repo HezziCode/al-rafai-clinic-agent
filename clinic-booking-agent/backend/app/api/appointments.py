@@ -124,5 +124,7 @@ async def list_appointments_endpoint():
     appointments = sheets_service.get_all_appointments()
     return {
         "total": len(appointments),
-        "appointments": appointments
+        "appointments": appointments,
+        "sheets_connected": sheets_service.initialized,
+        "warning": None if sheets_service.initialized else "Google Sheets disconnected — new bookings are NOT being saved!"
     }

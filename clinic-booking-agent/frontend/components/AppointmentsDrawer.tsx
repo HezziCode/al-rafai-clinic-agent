@@ -24,6 +24,7 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(false);
   const [showPast, setShowPast] = useState(true);
+  const [sheetsWarning, setSheetsWarning] = useState(false);
 
   const formatTo12Hour = (time: string): string => {
     if (!time) return time;
@@ -43,6 +44,11 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
       });
       if (res.ok) {
         const data = await res.json();
+        if (data.sheets_connected === false) {
+          setSheetsWarning(true);
+        } else {
+          setSheetsWarning(false);
+        }
         // Sort newest first
         const rawList: Appointment[] = data.appointments || [];
         setAppointments([...rawList].reverse());
@@ -103,6 +109,14 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
             </button>
           </div>
         </div>
+
+        {/* Sheets Disconnected Warning Banner */}
+        {sheetsWarning && (
+          <div className="bg-red-50 border-b border-red-200 text-red-700 text-xs font-semibold px-6 py-3 flex items-center gap-2">
+            <span className="text-sm">⚠️</span>
+            <span>Google Sheets disconnected — new bookings are NOT saving. Check backend logs immediately.</span>
+          </div>
+        )}
 
         {/* Filter Bar: Today/Upcoming vs Past Appointments */}
         <div className="bg-white px-6 py-3 border-b border-border flex items-center justify-between gap-2">
