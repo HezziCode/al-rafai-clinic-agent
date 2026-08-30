@@ -17,7 +17,11 @@ export const AboutDoctor: React.FC<AboutDoctorProps> = ({ onOpenChat }) => {
           <div className="w-full max-w-md h-[480px] rounded-3xl overflow-hidden shadow-xl border border-border relative group">
             <img 
               src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800&auto=format&fit=crop&q=80" 
-              alt="Dr. Fatima - AL-RAFAI CLINIC" 
+              alt="Dr. Fatima - Founder and PMDC Registered Consultant at AL-RAFAI CLINIC" 
+              width={800}
+              height={800}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />

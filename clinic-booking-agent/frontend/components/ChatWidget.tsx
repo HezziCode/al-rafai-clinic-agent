@@ -436,6 +436,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         <button
           onClick={onClose}
           title="Open AI Booking Assistant"
+          aria-label="Open AI Booking Assistant"
           className="relative w-16 h-16 bg-primary hover:bg-primary-dark text-white rounded-full shadow-2xl flex items-center justify-center transition-all duration-200 hover:scale-105 group"
         >
           {/* Animated Pulse Ring */}
@@ -474,6 +475,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
             onClick={onClose}
             className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
             title="Close Chat"
+            aria-label="Close Chat Window"
           >
             <X className="w-4 h-4" />
           </button>
@@ -615,6 +617,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
           value={input}
           onChange={(e) => setInput(e.target.value)}
           disabled={isStreaming}
+          aria-label="Type your message for Dr. Fatima's assistant"
           placeholder={isStreaming ? "Dr. Fatima's Assistant is responding..." : "Message in Roman Urdu or English..."}
           className={`flex-1 bg-warm text-text-dark text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-border focus:outline-none focus:border-primary transition-colors placeholder:text-text-light ${
             isStreaming ? 'opacity-60 cursor-not-allowed bg-gray-100' : ''
@@ -637,6 +640,13 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
             type="button"
             onClick={toggleVoiceCall}
             disabled={!VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID || isConnecting}
+            aria-label={
+              isConnecting
+                ? "Connecting to voice assistant..."
+                : isVoiceActive
+                ? "End voice call"
+                : "Start voice consultation with assistant"
+            }
             title={
               !VAPI_PUBLIC_KEY || !VAPI_ASSISTANT_ID
                 ? "Voice Assistant unconfigured in .env"
@@ -670,6 +680,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         <button
           type="submit"
           disabled={!input.trim() || isStreaming}
+          aria-label="Send message"
           className={`bg-primary hover:bg-primary-dark text-white p-2.5 rounded-xl transition-all flex items-center justify-center shadow-xs ${
             !input.trim() || isStreaming ? 'opacity-40 cursor-not-allowed' : 'hover:scale-105'
           }`}

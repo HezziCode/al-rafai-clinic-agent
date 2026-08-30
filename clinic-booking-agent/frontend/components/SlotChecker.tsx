@@ -78,6 +78,7 @@ export const SlotChecker: React.FC<SlotCheckerProps> = ({ onSelectSlot }) => {
                 <span className="text-[10px] text-text-light font-semibold uppercase tracking-wider">Select Date</span>
                 <input
                   type="date"
+                  aria-label="Select appointment date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   className="text-sm font-bold text-text-dark bg-transparent focus:outline-none cursor-pointer"
