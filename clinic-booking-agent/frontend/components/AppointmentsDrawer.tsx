@@ -23,7 +23,7 @@ interface Appointment {
 export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, onClose }) => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showPast, setShowPast] = useState(false);
+  const [showPast, setShowPast] = useState(true);
 
   const formatTo12Hour = (time: string): string => {
     if (!time) return time;
@@ -43,7 +43,9 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
       });
       if (res.ok) {
         const data = await res.json();
-        setAppointments(data.appointments || []);
+        // Sort newest first
+        const rawList: Appointment[] = data.appointments || [];
+        setAppointments([...rawList].reverse());
       }
     } catch (err) {
       console.error("Failed to fetch appointments", err);
@@ -60,7 +62,7 @@ export const AppointmentsDrawer: React.FC<AppointmentsDrawerProps> = ({ isOpen, 
 
   if (!isOpen) return null;
 
-  // Filter today & upcoming vs past appointments
+  // Filter today & upcoming vs all appointments
   const today = new Date().toISOString().split('T')[0];
   const filteredAppointments = appointments.filter((apt) => {
     if (showPast) return true;

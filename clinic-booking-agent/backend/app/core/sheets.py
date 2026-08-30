@@ -27,6 +27,7 @@ class GoogleSheetsService:
         self.spreadsheet: gspread.Spreadsheet | None = None
         self.appointments_sheet: gspread.Worksheet | None = None
         self.initialized = False
+        self._local_records: List[Dict[str, Any]] = []
         self._initialize()
 
     def _initialize(self):
@@ -122,14 +123,30 @@ class GoogleSheetsService:
         reraise=False
     )
     def get_all_appointments(self) -> List[Dict[str, Any]]:
-        """Returns all appointments as a list of dicts."""
-        if not self.initialized or not self.appointments_sheet:
-            return []
-        try:
-            return self.appointments_sheet.get_all_records()
-        except Exception as e:
-            logger.error(f"Error reading appointments sheet: {e}")
-            return []
+        """Returns all appointments as a list of dicts from Google Sheets merged with local cache."""
+        sheet_records = []
+        if self.initialized and self.appointments_sheet:
+            try:
+                sheet_records = self.appointments_sheet.get_all_records()
+            except Exception as e:
+                logger.error(f"Error reading appointments sheet: {e}")
+
+        # Merge sheet records and local records without duplicates (keyed by Booking_ID)
+        seen_ids = set()
+        merged = []
+        for r in sheet_records:
+            bid = str(r.get("Booking_ID", "")).strip()
+            if bid:
+                seen_ids.add(bid)
+            merged.append(r)
+
+        for r in self._local_records:
+            bid = str(r.get("Booking_ID", "")).strip()
+            if bid not in seen_ids:
+                merged.append(r)
+                seen_ids.add(bid)
+
+        return merged
 
     def get_available_slots(self, date_str: str) -> List[str]:
         """
@@ -141,10 +158,6 @@ class GoogleSheetsService:
             "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
             "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"
         ]
-
-        if not self.initialized:
-            # Fallback mock slots if Sheet service not online yet
-            return all_possible_slots
 
         existing_appointments = self.get_all_appointments()
         booked_times = set()
@@ -162,16 +175,17 @@ class GoogleSheetsService:
                     booked_times.add(start_t)
 
         # Also check blocked slots tab if present
-        try:
-            blocked_ws = self.spreadsheet.worksheet("Blocked_Slots")
-            blocked_records = blocked_ws.get_all_records()
-            for block in blocked_records:
-                if str(block.get("Block_Date", "")).strip() == date_str:
-                    b_start = str(block.get("Start_Time", "")).strip()
-                    if b_start:
-                        booked_times.add(b_start)
-        except Exception:
-            pass
+        if self.initialized and self.spreadsheet:
+            try:
+                blocked_ws = self.spreadsheet.worksheet("Blocked_Slots")
+                blocked_records = blocked_ws.get_all_records()
+                for block in blocked_records:
+                    if str(block.get("Block_Date", "")).strip() == date_str:
+                        b_start = str(block.get("Start_Time", "")).strip()
+                        if b_start:
+                            booked_times.add(b_start)
+            except Exception:
+                pass
 
         available = [slot for slot in all_possible_slots if slot not in booked_times]
         return available
@@ -185,7 +199,7 @@ class GoogleSheetsService:
         start_time: str
     ) -> Tuple[bool, str]:
         """
-        Thread-safe double-booking check and sheet record creation.
+        Thread-safe double-booking check and sheet record creation with local backup.
         """
         with sheet_lock:
             # 1. Double booking check
@@ -219,6 +233,21 @@ class GoogleSheetsService:
                 created_at
             ]
 
+            record_dict = {
+                "Booking_ID": booking_id,
+                "Patient_Name": patient_name,
+                "Patient_Phone": patient_phone,
+                "Visit_Reason": visit_reason,
+                "Appointment_Date": appointment_date,
+                "Start_Time": start_time,
+                "End_Time": end_time,
+                "Doctor_Name": settings.CLINIC_DOCTOR_NAME,
+                "Status": "BOOKED",
+                "Created_At": created_at
+            }
+            # Always save to local backup
+            self._local_records.append(record_dict)
+
             # Write to Sheet if initialized
             if self.initialized and self.appointments_sheet:
                 try:
@@ -227,7 +256,7 @@ class GoogleSheetsService:
                 except Exception as e:
                     logger.error(f"Failed to append row to Google Sheet: {e}")
             else:
-                logger.info(f"[LOCAL MOCK RECORD]: {row_data}")
+                logger.info(f"[LOCAL RECORD SAVED]: {record_dict}")
 
             return True, booking_id
 
