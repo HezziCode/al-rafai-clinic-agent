@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, X, Send, Phone, Mic, Square, Loader2, Sparkles, CheckCircle2, AlertCircle, Calendar, MapPin, Clock } from 'lucide-react';
+import { Bot, X, Send, Phone, Mic, Square, Loader2, Sparkles, CheckCircle2, AlertCircle, Calendar, MapPin, Clock, Copy, Check, PhoneOff } from 'lucide-react';
 import Vapi from '@vapi-ai/web';
 import { WS_URL, VAPI_PUBLIC_KEY, VAPI_ASSISTANT_ID } from '@/lib/config';
 
@@ -36,6 +36,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
   const [isConnecting, setIsConnecting] = useState(false);
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [failedAttempts, setFailedAttempts] = useState(0);
+  const [confirmedBookingId, setConfirmedBookingId] = useState<string | null>(null);
+  const [copiedBookingId, setCopiedBookingId] = useState(false);
 
   // Streaming & Tool Call State
   const [isAgentTyping, setIsAgentTyping] = useState(false);
@@ -50,6 +52,13 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const copyBookingId = (id: string) => {
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText(id);
+    setCopiedBookingId(true);
+    setTimeout(() => setCopiedBookingId(false), 2500);
   };
 
   // Initialize Vapi SDK instance safely with real-time partial transcript streaming
@@ -88,48 +97,23 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         });
 
         vapi.on('message', (msg: any) => {
-          if (msg.type === 'transcript') {
-            const role = msg.role === 'user' ? 'user' : 'bot';
-            const transcriptText = msg.transcript;
+          // Detect Booking Confirmation from tool calls or assistant speech
+          if (msg.type === 'tool-calls' || msg.type === 'tool-call-result' || msg.type === 'conversation-update') {
+            try {
+              const fullStr = JSON.stringify(msg);
+              const match = fullStr.match(/apt-\d{10,20}/i) || fullStr.match(/ALR-[A-Z0-9]{4,10}/i);
+              if (match && match[0]) {
+                const foundId = match[0].toUpperCase();
+                setConfirmedBookingId(foundId);
+              }
+            } catch (e) {}
+          }
 
-            // Handle partial user voice transcript (live real-time speech preview)
-            if (msg.transcriptType === 'partial' && role === 'user' && transcriptText) {
-              setMessages((prev) => {
-                const lastMsg = prev[prev.length - 1];
-                if (lastMsg && lastMsg.id.startsWith('voice-partial-')) {
-                  return [
-                    ...prev.slice(0, -1),
-                    { ...lastMsg, text: transcriptText, isStreaming: true }
-                  ];
-                }
-                return [
-                  ...prev,
-                  {
-                    id: `voice-partial-${Date.now()}`,
-                    sender: 'user',
-                    text: transcriptText,
-                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    isStreaming: true
-                  }
-                ];
-              });
-            }
-
-            // Handle final transcript
-            if (msg.transcriptType === 'final' && transcriptText) {
-              setMessages((prev) => {
-                const withoutPartial = prev.filter((m) => !m.id.startsWith('voice-partial-'));
-                return [
-                  ...withoutPartial,
-                  {
-                    id: `vapi-trans-${Date.now()}`,
-                    sender: role,
-                    text: transcriptText,
-                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    isStreaming: false
-                  }
-                ];
-              });
+          // If assistant says booking ID in transcript, extract it cleanly
+          if (msg.type === 'transcript' && msg.transcript) {
+            const match = msg.transcript.match(/apt-\d{10,20}/i) || msg.transcript.match(/ALR-[A-Z0-9]{4,10}/i);
+            if (match && match[0]) {
+              setConfirmedBookingId(match[0].toUpperCase());
             }
           }
         });
@@ -482,29 +466,75 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         </div>
       </div>
 
-      {/* Voice Mode Status Banner (Calm Medical Blue Palette) */}
-      {isVoiceActive && (
-        <div className="bg-primary-light border-b border-blue-200 px-4 py-2.5 text-xs text-primary font-bold flex items-center justify-between shadow-inner">
-          <span className="flex items-center gap-2">
-            <Mic className="w-3.5 h-3.5 text-primary animate-pulse" />
-            Voice Assistant Active (Roman Urdu / English)
-          </span>
-          <span className="text-[10px] text-primary font-extrabold bg-white px-2.5 py-0.5 rounded-full border border-blue-200 shadow-xs">
-            Speak Now
-          </span>
+      {/* Confirmed Booking ID Badge (Floating Copy Card) */}
+      {confirmedBookingId && (
+        <div className="mx-3 my-2 p-3.5 bg-emerald-50 border-2 border-emerald-400 rounded-2xl shadow-md flex items-center justify-between animate-in zoom-in-95 duration-200">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider block">Appointment Confirmed!</span>
+              <span className="font-mono text-sm font-black text-emerald-950 tracking-wide">{confirmedBookingId}</span>
+            </div>
+          </div>
+          <button
+            onClick={() => copyBookingId(confirmedBookingId)}
+            className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs ${
+              copiedBookingId
+                ? 'bg-emerald-600 text-white'
+                : 'bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300'
+            }`}
+          >
+            {copiedBookingId ? (
+              <>
+                <Check className="w-3.5 h-3.5" /> Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5" /> Copy ID
+              </>
+            )}
+          </button>
         </div>
       )}
 
-      {/* Busy Toast Banner */}
-      {busyToast && (
-        <div className="bg-amber-100 border-b border-amber-200 px-4 py-2 text-xs text-amber-800 font-semibold flex items-center gap-2 animate-in fade-in duration-200">
-          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-          <span>{busyToast}</span>
-        </div>
-      )}
+      {/* Dedicated Voice Calling Screen Overlay (When Call is Active) */}
+      {isVoiceActive ? (
+        <div className="flex-1 flex flex-col items-center justify-between p-6 bg-gradient-to-b from-blue-50/70 via-white to-warm/50 text-center animate-in fade-in duration-200">
+          {/* Top Status */}
+          <div className="pt-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary font-bold text-xs">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+              Live Consultation Call
+            </div>
+            <h4 className="text-lg font-black text-text-dark mt-3">Dr. Fatima's AI Receptionist</h4>
+            <p className="text-xs text-text-light mt-1">Speak naturally in Roman Urdu or English</p>
+          </div>
 
-      {/* Messages Scroll Area */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-white">
+          {/* Center Animated Voice Pulse Orb */}
+          <div className="relative flex items-center justify-center my-6">
+            <span className="absolute w-36 h-36 rounded-full bg-primary/15 animate-ping [animation-duration:2.5s]" />
+            <span className="absolute w-28 h-28 rounded-full bg-primary/25 animate-pulse" />
+            <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-primary to-blue-500 shadow-xl flex items-center justify-center text-white">
+              <Mic className="w-9 h-9 animate-bounce [animation-duration:1.5s]" />
+            </div>
+          </div>
+
+          {/* Bottom Action: End Call Button */}
+          <div className="w-full pb-2 flex flex-col items-center gap-3">
+            <p className="text-[11px] text-text-mid font-medium">Listening to you • No text needed</p>
+            <button
+              onClick={toggleVoiceCall}
+              className="w-full max-w-[240px] py-3.5 px-6 rounded-2xl bg-red-500 hover:bg-red-600 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-red-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <PhoneOff className="w-5 h-5" /> End Call
+            </button>
+          </div>
+        </div>
+      ) : (
+        /* Messages Scroll Area (Only for Text Chat Mode) */
+        <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-white">
         {messages.map((msg) => (
           <React.Fragment key={msg.id}>
             {/* System / Tool Call / Status Message */}
@@ -555,7 +585,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, onClose, initial
         )}
 
         <div ref={messagesEndRef} />
-      </div>
+        </div>
+      )}
 
       {/* Direct Call Fallback Banner */}
       {failedAttempts >= 3 && (
